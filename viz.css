@@ -1,0 +1,20 @@
+body {
+  background-color: #333333;
+}
+
+.grid line {
+  color: #555555;
+}
+
+.yaxis, .xaxis, .yaxis line, .xaxis line {
+  color: #FFFFFF;
+}
+
+#tooltip {
+  position: absolute;
+  visibility: hidden;
+  background-color: #999999;
+  padding: 5px 10px 5px 10px;
+  border: 1px white;
+  width: calc(200px + 1vw);
+}
