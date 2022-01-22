@@ -49,6 +49,7 @@ Papa.parse('data.csv', {
     download: true,
     header: true,
     dynamicTyping: true,
+    skipEmptyLines: true,
   	step: (row) => {
       const r = row.data;
 
@@ -136,7 +137,8 @@ Papa.parse('data.csv', {
               .style('top', event.pageY - 100 + 'px')
 
           let dt = (d.target.innerHTML).split(',');
-
+          
+          dt[5] = dt[5] == 0 ? '00' : dt[5];
           dt[6] = dt[6] == 0 ? '00' : dt[6];
 
           $('#date').html(`<text>${dt[4]}, ${dt[2]} ${dt[3]}, ${dt[5]}:${dt[6]}</text>`);
