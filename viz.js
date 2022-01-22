@@ -18,6 +18,8 @@ const months = {
   "December": 11
 }
 
+const monthmarks = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+
 const days = {
   "Monday": 0,
   "Tuesday": 1,
@@ -51,7 +53,7 @@ Papa.parse('data.csv', {
       const r = row.data;
 
       const x = (days[r.Day] * 1440) + (r.Hour * 60) + r.Minute;
-      const y = months[r.Month] + days[r.Day];
+      const y = monthmarks[months[r.Month]] + r.Date;
 
       pieces.push([x, y, r.Month, r.Date, r.Day, r.Hour, r.Minute]);
   	},
