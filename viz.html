@@ -9,12 +9,13 @@
     <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
     <script type="text/javascript" src="papaparse.min.js"></script>
     <script type="text/javascript" src="viz.js"></script>
+    <script type="text/javascript" src="main.js"></script>
     <link rel="stylesheet" type="text/css" href="viz.css">
     <title>Masterpiece 2022</title>
 </head>
 <body>
     <form>
-      <select onchange="scaleByDay(this.value)">
+      <select id="day" onchange="scale()">
         <option value="Week" selected>Week</option>
         <option value="Monday">Monday</option>
         <option value="Tuesday">Tuesday</option>
@@ -23,6 +24,21 @@
         <option value="Friday">Friday</option>
         <option value="Saturday">Saturday</option>
         <option value="Sunday">Sunday</option>
+      </select>
+      <select id="month" onchange="scale()">
+        <option value="Year" selected>Year</option>
+        <option value="January">January</option>
+        <option value="February">February</option>
+        <option value="March">March</option>
+        <option value="April">April</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+        <option value="July">July</option>
+        <option value="August">August</option>
+        <option value="September">September</option>
+        <option value="October">October</option>
+        <option value="November">November</option>
+        <option value="December">December</option>
       </select>
     </form>
     <br>
