@@ -96,6 +96,9 @@ scale = () => {
         if (daySelected != 'Week') {
           newPiece.x = piece.hour * 60 + piece.minute;
         }
+        if (monthSelected != 'Year') {
+          newPiece.y = piece.date;
+        }
         filteredPieces.push(newPiece);
       }
     }
@@ -181,7 +184,7 @@ appendData = (filteredPieces, xScale, yScale) => {
       const hour = dt.hour.toString().length == 1 ? '0'.concat(dt.hour) : dt.hour;
       const minute = dt.minute.toString().length == 1 ? '0'.concat(dt.minute) : dt.minute;
 
-      $('#date').html(`<text>${dt.day}, ${dt.month} ${dt.day}, ${hour}:${minute}</text>`);
+      $('#date').html(`<text>${dt.day}, ${dt.month} ${dt.date}, ${hour}:${minute}</text>`);
 
      })
      .on('mouseout', () => {
