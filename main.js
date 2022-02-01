@@ -9,7 +9,15 @@ Papa.parse('data.csv', {
       const x = (days[r.Day] * 1440) + (r.Hour * 60) + r.Minute;
       const y = monthMarks[months[r.Month]] + r.Date;
 
-      pieces.push([x, y, r.Month, r.Date, r.Day, r.Hour, r.Minute]);
+      pieces.push({
+        'x': x,
+        'y': y,
+        'month': r.Month,
+        'date': r.Date,
+        'day': r.Day,
+        'hour': r.Hour,
+        'minute': r.Minute
+      })
   	},
     complete: () => {
       console.log("Done!");

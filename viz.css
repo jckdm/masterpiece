@@ -18,3 +18,43 @@ body {
   border: 1px white;
   width: calc(200px + 1vw);
 }
+
+#modal {
+   display: none;
+   position: fixed;
+   z-index: 5;
+   bottom: 0;
+   left: 0;
+   top: 0;
+   right: 0;
+   width: 100%;
+   height: 100%;
+   overflow: auto;
+   padding-top: calc(50px + 10vh);
+}
+
+.modal-content {
+   background-color: #F0F7FF;
+   margin: auto;
+   padding: calc(12px + 0.35vw + 0.35vh);
+   width: 67.5%;
+   overflow: auto;
+   overflow-y: auto;
+   border: calc(0.15vw + 0.15vh) solid #000000;
+   font-size: calc(8px + 0.75vw);
+   text-align: left;
+   color: #333333;
+   line-height: 1.25em;
+}
+
+.close {
+   float: right;
+   font-size: calc(20px + 1.25vw + 1.25vh);
+   color: #000000;
+}
+
+.close:hover {
+   color: #FFFFFF;
+   text-decoration: none;
+   cursor: pointer;
+}

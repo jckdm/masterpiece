@@ -91,10 +91,10 @@ scale = () => {
   }
   if (daySelected != 'Week' || monthSelected != 'Year') {
     for (piece of pieces) {
-      if ((piece[4] == daySelected || daySelected == 'Week') && (piece[2] == monthSelected || monthSelected == 'Year')) {
+      if ((piece.day == daySelected || daySelected == 'Week') && (piece.month == monthSelected || monthSelected == 'Year')) {
         let newPiece = JSON.parse(JSON.stringify(piece));
         if (daySelected != 'Week') {
-          newPiece[0] = piece[5] * 60 + piece[6];
+          newPiece.x = piece.hour * 60 + piece.minute;
         }
         filteredPieces.push(newPiece);
       }
@@ -162,11 +162,11 @@ appendData = (filteredPieces, xScale, yScale) => {
      .data(filteredPieces)
      .enter()
      .append('circle')
-     .attr('cx', (d) => xScale(d[0]))
-     .attr('cy', (d) => yScale(d[1]))
+     .attr('cx', (d) => xScale(d.x))
+     .attr('cy', (d) => yScale(d.y))
      .attr('stroke', 'black')
      .attr('stroke-width', '1')
-     .attr('fill', (d) => colors[d[2]])
+     .attr('fill', (d) => colors[d.month])
      .attr('r', 5)
      .text((d) => d)
      .on('mouseover', (d) => {
@@ -176,15 +176,39 @@ appendData = (filteredPieces, xScale, yScale) => {
           .style('left', event.pageX - 100 + 'px')
           .style('top', event.pageY - 100 + 'px')
 
-      const dt = (d.target.innerHTML).split(',');
+      const dt = (d.target.__data__);
 
-      dt[5] = dt[5] == 0 ? '00' : dt[5];
-      dt[6] = dt[6] == 0 ? '00' : dt[6];
+      const hour = dt.hour.toString().length == 1 ? '0'.concat(dt.hour) : dt.hour;
+      const minute = dt.minute.toString().length == 1 ? '0'.concat(dt.minute) : dt.minute;
 
-      $('#date').html(`<text>${dt[4]}, ${dt[2]} ${dt[3]}, ${dt[5]}:${dt[6]}</text>`);
+      $('#date').html(`<text>${dt.day}, ${dt.month} ${dt.day}, ${hour}:${minute}</text>`);
 
      })
      .on('mouseout', () => {
           d3.select('#tooltip').style('visibility', 'hidden')
      })
+}
+
+analyze = () => {
+  if ($('#shortest')[0].innerHTML == '') {
+    let shortest = Number.MAX_VALUE;
+    let longest = Number.MIN_VALUE;
+
+    for (let i = 0; i < pieces.length - 1; i++) {
+      const p1 = pieces[i];
+      const p2 = pieces[i + 1];
+      const d1 = new Date(2022, months[p1.month], p1.date, p1.hour, p1.minute);
+      const d2 = new Date(2022, months[p2.month], p2.date, p2.hour, p2.minute);
+
+      const interval = d2 - d1;
+      if (interval < shortest) {
+        shortest = interval;
+      }
+      else if (interval > longest) {
+        longest = interval;
+      }
+    }
+    $('#shortest')[0].innerHTML = `${(shortest / 60000)} minutes`;
+    $('#longest')[0].innerHTML = `${(longest / 3600000).toFixed(2)} hours`;
+  }
 }

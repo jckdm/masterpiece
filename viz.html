@@ -40,8 +40,17 @@
         <option value="November">November</option>
         <option value="December">December</option>
       </select>
+      <button onclick="analyze(); $('#modal')[0].style.display = 'block'; return false;" id="open">Analyze</button>
+      <div id="modal">
+        <div class="modal-content">
+           <button onclick="$('#modal')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
+           <span>Longest gap: </span><span id="longest"></span> <br>
+           <span>Shortest gap: </span><span id="shortest"></span> <br>
+           <span>Busiest day: </span><span id="busiest"></span>
+        </div>
+      </div>
     </form>
-    <br>
+
     <div id="tooltip">
       <text id="date"></text>
     </div>
