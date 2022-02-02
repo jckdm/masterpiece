@@ -197,6 +197,12 @@ analyze = () => {
     let shortest = Number.MAX_VALUE;
     let longest = Number.MIN_VALUE;
 
+    let current = 0;
+    let busiest = 0;
+    let busiestDay;
+
+    const busyDays = {}
+
     for (let i = 0; i < pieces.length - 1; i++) {
       const p1 = pieces[i];
       const p2 = pieces[i + 1];
@@ -210,7 +216,22 @@ analyze = () => {
       else if (interval > longest) {
         longest = interval;
       }
+
+      const key =  `${pieces[i].month} ${pieces[i].date}`;
+      const next = `${pieces[i + 1].month} ${pieces[i + 1].date}`;
+
+      if (!(key in busyDays)) {
+        busyDays[key] = 1
+      }
+      if (key in busyDays && key == next) {
+        busyDays[key] += 1;
+      }
+      else if (key != next && busyDays[key] == 1) {
+        delete busyDays[key];
+      }
+
     }
+    console.log(busyDays);
     $('#shortest')[0].innerHTML = `${(shortest / 60000)} minutes`;
     $('#longest')[0].innerHTML = `${(longest / 3600000).toFixed(2)} hours`;
   }
