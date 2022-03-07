@@ -1,5 +1,5 @@
 const w = 1250;
-const h = 500;
+const h = 725;
 const padding = 60;
 const pieces = [];
 let filteredPieces = [];
