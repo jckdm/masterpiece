@@ -197,9 +197,8 @@ analyze = () => {
     let shortest = Number.MAX_VALUE;
     let longest = Number.MIN_VALUE;
 
-    let current = 0;
     let busiest = 0;
-    let busiestDay;
+    let busiestDays = '';
 
     const busyDays = {}
 
@@ -217,7 +216,7 @@ analyze = () => {
         longest = interval;
       }
 
-      const key =  `${pieces[i].month} ${pieces[i].date}`;
+      const key = `${pieces[i].month} ${pieces[i].date}`;
       const next = `${pieces[i + 1].month} ${pieces[i + 1].date}`;
 
       if (!(key in busyDays)) {
@@ -225,14 +224,31 @@ analyze = () => {
       }
       if (key in busyDays && key == next) {
         busyDays[key] += 1;
+        if (busyDays[key] > busiest) {
+          busiest = busyDays[key];
+          Object.keys(busyDays).forEach((key) => {
+            if (busyDays[key] < busiest) {
+              delete busyDays[key];
+            }
+          })
+        }
       }
       else if (key != next && busyDays[key] == 1) {
         delete busyDays[key];
       }
-
     }
-    console.log(busyDays);
+    Object.keys(busyDays).forEach((key) => {
+      if (busyDays[key] < busiest) {
+        delete busyDays[key];
+      }
+    })
+    // console.log(busiestDays);
     $('#shortest')[0].innerHTML = `${(shortest / 60000)} minutes`;
-    $('#longest')[0].innerHTML = `${(longest / 3600000).toFixed(2)} hours`;
+
+    const longDays = Math.floor(longest / 86400000);
+    const longHours = Math.floor((longest - (longDays * 86400000)) / 3600000);
+    const longMinutes = Math.floor ((longest - ((longDays * 86400000) + (longHours * 3600000))) / 60000);
+
+    $('#longest')[0].innerHTML = `${longDays} days, ${longHours} hours, ${longMinutes} minutes`;
   }
 }
