@@ -2,8 +2,13 @@ const w = 1250;
 const h = 725;
 const padding = 60;
 const pieces = [];
+const objs = [];
+let yesterday = '';
+let uniqueDays = 0;
 let filteredPieces = [];
 let monthSelected, daySelected;
+let busyDays = '';
+let busiest = 0;
 
 const months = {
   "January": 0,
@@ -197,11 +202,6 @@ analyze = () => {
     let shortest = Number.MAX_VALUE;
     let longest = Number.MIN_VALUE;
 
-    let busiest = 0;
-    let busiestDays = '';
-
-    const busyDays = {}
-
     for (let i = 0; i < pieces.length - 1; i++) {
       const p1 = pieces[i];
       const p2 = pieces[i + 1];
@@ -215,34 +215,7 @@ analyze = () => {
       else if (interval > longest) {
         longest = interval;
       }
-
-      const key = `${pieces[i].month} ${pieces[i].date}`;
-      const next = `${pieces[i + 1].month} ${pieces[i + 1].date}`;
-
-      if (!(key in busyDays)) {
-        busyDays[key] = 1
-      }
-      if (key in busyDays && key == next) {
-        busyDays[key] += 1;
-        if (busyDays[key] > busiest) {
-          busiest = busyDays[key];
-          Object.keys(busyDays).forEach((key) => {
-            if (busyDays[key] < busiest) {
-              delete busyDays[key];
-            }
-          })
-        }
-      }
-      else if (key != next && busyDays[key] == 1) {
-        delete busyDays[key];
-      }
     }
-    Object.keys(busyDays).forEach((key) => {
-      if (busyDays[key] < busiest) {
-        delete busyDays[key];
-      }
-    })
-    // console.log(busiestDays);
     $('#shortest')[0].innerHTML = `${(shortest / 60000)} minutes`;
 
     const longDays = Math.floor(longest / 86400000);
@@ -250,5 +223,7 @@ analyze = () => {
     const longMinutes = Math.floor ((longest - ((longDays * 86400000) + (longHours * 3600000))) / 60000);
 
     $('#longest')[0].innerHTML = `${longDays} days, ${longHours} hours, ${longMinutes} minutes`;
+
+    $('#busiest')[0].innerHTML = `${busiest}x: ${busyDays}`;
   }
 }
