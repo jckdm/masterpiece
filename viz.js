@@ -3,6 +3,9 @@ const h = 725;
 const padding = 60;
 const pieces = [];
 const objs = [];
+const gaps = [];
+let count = 0;
+let lastD = null;
 let yesterday = '';
 let uniqueDays = 0;
 let filteredPieces = [];
@@ -223,6 +226,21 @@ analyze = () => {
     const longMinutes = Math.floor ((longest - ((longDays * 86400000) + (longHours * 3600000))) / 60000);
 
     $('#longest')[0].innerHTML = `${longDays} days, ${longHours} hours, ${longMinutes} minutes`;
+
+    gaps.sort(sort = (a, b) => a - b);
+    let medianish = null;
+    // odd
+    if ((count - 1) % 2 == 1) {
+      medianish = gaps[count / 2];
+    }
+    else {
+      let middish = Math.floor((count - 1) / 2);
+      medianish = (gaps[middish] + gaps[middish + 1]) / 2;
+    }
+    const medianHours = Math.floor(medianish / 3600000);
+    const medianMinutes = (medianish - (medianHours * 3600000)) / 60000;
+
+    $('#median')[0].innerHTML = `${medianHours} hours, ${medianMinutes} minutes`;
 
     $('#busiest')[0].innerHTML = `${busiest}x: ${busyDays}`;
   }

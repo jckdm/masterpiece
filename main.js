@@ -18,6 +18,18 @@ Papa.parse('data.csv', {
         'minute': r.Minute
       })
 
+      const d = new Date(2022, months[r.Month], r.Date, r.Hour, r.Minute);
+
+      if (count != 0) {
+        gaps.push(d - lastD);
+        lastD = d;
+        count++;
+      }
+      else {
+        count++;
+        lastD = d;
+      }
+
       const today = `${r.Month} ${r.Date}`;
       const now = `${r.Hour} ${r.Minute}`;
 
@@ -46,8 +58,9 @@ Papa.parse('data.csv', {
   	},
     complete: () => {
       console.log("Done!");
-      console.log(pieces);
-      console.log(objs);
+      // console.log(pieces);
+      // console.log(objs);
+      // console.log(gaps.sort(sort = (a, b) => a - b));
 
       // create SVG
       d3.select('body').append('svg').attr('width', w).attr('height', h);
