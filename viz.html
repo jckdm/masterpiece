@@ -40,6 +40,7 @@
         <option value="November">November</option>
         <option value="December">December</option>
       </select>
+
       <button onclick="analyze(); $('#modal')[0].style.display = 'block'; return false;" id="open">Analyze</button>
       <div id="modal">
         <div class="modal-content">
@@ -50,7 +51,15 @@
            <span>Busiest day(s): </span><span id="busiest"></span>
         </div>
       </div>
-    </form>
+
+      <!-- <button onclick="barChart(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">DoW Bar Chart</button>
+      <div id="modalBar">
+        <div class="modal-content">
+           <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
+
+        </div>
+      </div> -->
+      </form>
 
     <div id="tooltip">
       <text id="date"></text>

@@ -4,6 +4,7 @@ const padding = 60;
 const pieces = [];
 const objs = [];
 const gaps = [];
+const dayFreqs = [{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0}];
 let count = 0;
 let lastD = null;
 let yesterday = '';

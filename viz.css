@@ -19,7 +19,7 @@ body {
   width: calc(200px + 1vw);
 }
 
-#modal {
+#modal, #modalBar {
    display: none;
    position: fixed;
    z-index: 5;

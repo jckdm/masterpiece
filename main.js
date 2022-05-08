@@ -18,6 +18,8 @@ Papa.parse('data.csv', {
         'minute': r.Minute
       })
 
+      dayFreqs[days[r.Day]].freq += 1;
+
       const d = new Date(2022, months[r.Month], r.Date, r.Hour, r.Minute);
 
       if (count != 0) {
@@ -58,6 +60,7 @@ Papa.parse('data.csv', {
   	},
     complete: () => {
       console.log("Done!");
+      // console.log(dayFreqs);
       // console.log(pieces);
       // console.log(objs);
       // console.log(gaps.sort(sort = (a, b) => a - b));
