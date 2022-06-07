@@ -66,7 +66,7 @@ Papa.parse('data.csv', {
       // console.log(gaps.sort(sort = (a, b) => a - b));
 
       // create SVG
-      d3.select('body').append('svg').attr('width', w).attr('height', h);
+      d3.select('body').append('svg').attr('id', 'main').attr('width', w).attr('height', h);
       scale();
     }
 });

@@ -4,7 +4,7 @@ const padding = 60;
 const pieces = [];
 const objs = [];
 const gaps = [];
-const dayFreqs = [{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0},{'freq': 0}];
+const dayFreqs = [{'day': 'Monday', 'freq': 0},{'day': 'Tuesday', 'freq': 0},{'day': 'Wednesday', 'freq': 0},{'day': 'Thursday', 'freq': 0},{'day': 'Friday', 'freq': 0},{'day': 'Saturday', 'freq': 0},{'day': 'Sunday', 'freq': 0}];
 let count = 0;
 let lastD = null;
 let yesterday = '';
@@ -142,22 +142,22 @@ scale = () => {
       .scale(yScale);
 
   // vertical gridlines
-  d3.select('svg').append('g')
+  d3.select('#main').append('g')
     .attr('class', 'gridV')
     .call(vGridlines);
 
   // append axes
-  d3.select('svg').append('g')
+  d3.select('#main').append('g')
     .attr('class', 'xaxis')
     .attr('transform', 'translate(0,' + (h - padding) + ')')
     .call(xAxis);
 
   // vertical gridlines
-  d3.select('svg').append('g')
+  d3.select('#main').append('g')
      .attr('class', 'gridH')
      .call(hGridlines);
 
-  d3.select('svg').append('g')
+  d3.select('#main').append('g')
     .attr('class', 'yaxis')
     .attr('transform', 'translate(' + padding + ',0)')
     .call(yAxis);
@@ -170,7 +170,7 @@ appendData = (filteredPieces, xScale, yScale) => {
   d3.select('body').append('div').attr('id', 'tooltip');
 
   // append data!
-  d3.select('svg').selectAll('circle')
+  d3.select('#main').selectAll('circle')
      .data(filteredPieces)
      .enter()
      .append('circle')
@@ -245,4 +245,36 @@ analyze = () => {
 
     $('#busiest')[0].innerHTML = `${busiest}x: ${busyDays}`;
   }
+}
+
+barChart = () => {
+  let bars = d3.select('#bar');
+
+  let x = d3.scaleBand()
+    .range([0, 250])
+    .domain(dayFreqs.map((d) => { return d.day; }))
+    .padding(0.25);
+
+  bars.append('g')
+    .call(d3.axisBottom(x))
+    .selectAll('text')
+    .attr("transform", "translate(-13,10)rotate(-90)")
+     .style("text-anchor", "end");
+
+  let y = d3.scaleLinear()
+    .range([150, 0])
+    .domain([0, 150]);
+
+  bars.append('g')
+    .call(d3.axisLeft(y));
+
+  bars.selectAll('bar')
+    .data(dayFreqs)
+    .enter()
+    .append('rect')
+      .attr('x', (d) => { return x(d.day); })
+      .attr('y', (d) => { return y(d.freq); })
+      .attr('width', x.bandwidth())
+      .attr('height', (d) => { return 150 - y(d.freq); })
+      .attr('fill', '#000000')
 }
