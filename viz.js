@@ -5,6 +5,7 @@ const pieces = [];
 const objs = [];
 const gaps = [];
 const dayFreqs = [{'day': 'Monday', 'freq': 0},{'day': 'Tuesday', 'freq': 0},{'day': 'Wednesday', 'freq': 0},{'day': 'Thursday', 'freq': 0},{'day': 'Friday', 'freq': 0},{'day': 'Saturday', 'freq': 0},{'day': 'Sunday', 'freq': 0}];
+const monthFreqs = [{'month': 'January', 'freq': 0},{'month': 'February', 'freq': 0},{'month': 'March', 'freq': 0},{'month': 'April', 'freq': 0},{'month': 'May', 'freq': 0},{'month': 'June', 'freq': 0},{'month': 'July', 'freq': 0},{'month': 'August', 'freq': 0},{'month': 'September', 'freq': 0},{'month': 'October', 'freq': 0},{'month': 'November', 'freq': 0},{'month': 'December', 'freq': 0}];
 let count = 0;
 let lastD = null;
 let yesterday = '';
@@ -247,11 +248,16 @@ analyze = () => {
   }
 }
 
-barChart = () => {
-  let bars = d3.select('#bar');
+barCharts = () => {
+  dayBars();
+  monthBars();
+}
+
+dayBars = () => {
+  let bars = d3.select('#dayBar');
 
   let x = d3.scaleBand()
-    .range([0, 250])
+    .range([0, 300])
     .domain(dayFreqs.map((d) => { return d.day; }))
     .padding(0.25);
 
@@ -277,4 +283,56 @@ barChart = () => {
       .attr('width', x.bandwidth())
       .attr('height', (d) => { return 150 - y(d.freq); })
       .attr('fill', '#000000')
+
+  bars.selectAll('bar')
+      .data(dayFreqs)
+      .enter()
+      .append('text')
+      .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
+      .attr('class', 'barLabels')
+      .attr('y', (d) => { return y(d.freq) - 3; })
+      .attr('fill', '#000000')
+      .text((d) => { return d.freq; })
+}
+
+monthBars = () => {
+  let bars = d3.select('#monthBar');
+
+  let x = d3.scaleBand()
+    .range([0, 300])
+    .domain(monthFreqs.map((d) => { return d.month; }))
+    .padding(0.25);
+
+  bars.append('g')
+    .call(d3.axisBottom(x))
+    .selectAll('text')
+    .attr("transform", "translate(-13,10)rotate(-90)")
+     .style("text-anchor", "end");
+
+  let y = d3.scaleLinear()
+    .range([150, 0])
+    .domain([0, 150]);
+
+  bars.append('g')
+    .call(d3.axisLeft(y));
+
+  bars.selectAll('bar')
+    .data(monthFreqs)
+    .enter()
+    .append('rect')
+      .attr('x', (d) => { return x(d.month); })
+      .attr('y', (d) => { return y(d.freq); })
+      .attr('width', x.bandwidth())
+      .attr('height', (d) => { return 150 - y(d.freq); })
+      .attr('fill', '#000000')
+
+  bars.selectAll('bar')
+      .data(monthFreqs)
+      .enter()
+      .append('text')
+      .attr('x', (d) => { return x(d.month) + (x.bandwidth() / 6); })
+      .attr('class', 'barLabels')
+      .attr('y', (d) => { return y(d.freq) - 3; })
+      .attr('fill', '#000000')
+      .text((d) => { return d.freq; })
 }

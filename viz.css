@@ -19,6 +19,11 @@ body {
   width: calc(200px + 1vw);
 }
 
+.barLabels {
+  font-size: 10px;
+  font-family: monospace;
+}
+
 #modal, #modalBar {
    display: none;
    position: fixed;
@@ -34,7 +39,7 @@ body {
 }
 
 .modal-content {
-   background-color: #F0F7FF;
+   background-color: #F5F5F5;
    margin: auto;
    padding: calc(12px + 0.35vw + 0.35vh);
    width: 67.5%;
