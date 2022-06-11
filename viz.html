@@ -40,18 +40,28 @@
         <option value="November">November</option>
         <option value="December">December</option>
       </select>
-
       <button onclick="analyze(); $('#modal')[0].style.display = 'block'; return false;" id="open">Analyze</button>
       <div id="modal">
         <div class="modal-content">
            <button onclick="$('#modal')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
-           <span>Shortest gap: </span><span id="shortest"></span> <br>
-           <span>Median gap: </span><span id="median"></span> <br>
-           <span>Longest gap: </span><span id="longest"></span> <br>
-           <span>Busiest day(s): </span><span id="busiest"></span>
+           <table>
+             <th>Overall</th>
+             <th>Gaps</th>
+             <tr>
+               <td>Total count: <span id="total"></span></td>
+               <td>Shortest gap: <span id="shortest"></span></td>
+             </tr>
+             <tr>
+               <td>Active days: <span id="active"></span></td>
+               <td>Median gap: <span id="median"></span></td>
+             </tr>
+             <tr>
+               <td>Busiest day(s): <span id="busiest"></span></td>
+               <td>Longest gap: <span id="longest"></span></td>
+             </tr>
+           </table>
         </div>
       </div>
-
       <button onclick="barCharts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">Bar Charts</button>
       <div id="modalBar">
         <div class="modal-content">
@@ -62,7 +72,6 @@
         </div>
       </div>
       </form>
-
     <div id="tooltip">
       <text id="date"></text>
     </div>

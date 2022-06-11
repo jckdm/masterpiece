@@ -63,3 +63,8 @@ body {
    text-decoration: none;
    cursor: pointer;
 }
+
+td {
+  padding-right: 50px;
+  padding-bottom: 10px;
+}

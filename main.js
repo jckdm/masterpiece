@@ -18,6 +18,8 @@ Papa.parse('data.csv', {
         'minute': r.Minute
       })
 
+      total++;
+
       dayFreqs[days[r.Day]].freq += 1;
       monthFreqs[months[r.Month]].freq += 1;
 
@@ -65,6 +67,7 @@ Papa.parse('data.csv', {
       // console.log(monthFreqs);
       // console.log(pieces);
       // console.log(objs);
+      // console.log(uniqueDays);
       // console.log(gaps.sort(sort = (a, b) => a - b));
 
       // create SVG

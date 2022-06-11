@@ -14,6 +14,7 @@ let filteredPieces = [];
 let monthSelected, daySelected;
 let busyDays = '';
 let busiest = 0;
+let total = 0;
 
 const months = {
   "January": 0,
@@ -115,14 +116,14 @@ scale = () => {
   }
 
   const xScale = d3.scaleLinear()
-      .domain([0, xMax]).range([padding, w - 15])
+    .domain([0, xMax]).range([padding, w - 15])
 
   const xAxis = d3.axisBottom().scale(xScale)
     .tickValues(xTickValues)
     .tickFormat((d, i) => xTickFormat[i]);
 
   const yScale = d3.scaleLinear()
-      .domain([1, yMax]).range([h - padding, padding]);
+    .domain([1, yMax]).range([h - padding, padding]);
 
   const yAxis = d3.axisLeft().scale(yScale)
     .tickValues(yTickValues)
@@ -225,7 +226,7 @@ analyze = () => {
 
     const longDays = Math.floor(longest / 86400000);
     const longHours = Math.floor((longest - (longDays * 86400000)) / 3600000);
-    const longMinutes = Math.floor ((longest - ((longDays * 86400000) + (longHours * 3600000))) / 60000);
+    const longMinutes = Math.floor((longest - ((longDays * 86400000) + (longHours * 3600000))) / 60000);
 
     $('#longest')[0].innerHTML = `${longDays} days, ${longHours} hours, ${longMinutes} minutes`;
 
@@ -245,6 +246,10 @@ analyze = () => {
     $('#median')[0].innerHTML = `${medianHours} hours, ${medianMinutes} minutes`;
 
     $('#busiest')[0].innerHTML = `${busiest}x: ${busyDays}`;
+
+    $('#total')[0].innerHTML = total;
+
+    $('#active')[0].innerHTML = uniqueDays;
   }
 }
 
@@ -265,7 +270,7 @@ dayBars = () => {
     .call(d3.axisBottom(x))
     .selectAll('text')
     .attr("transform", "translate(-13,10)rotate(-90)")
-     .style("text-anchor", "end");
+    .style("text-anchor", "end");
 
   let y = d3.scaleLinear()
     .range([150, 0])
@@ -278,21 +283,21 @@ dayBars = () => {
     .data(dayFreqs)
     .enter()
     .append('rect')
-      .attr('x', (d) => { return x(d.day); })
-      .attr('y', (d) => { return y(d.freq); })
-      .attr('width', x.bandwidth())
-      .attr('height', (d) => { return 150 - y(d.freq); })
-      .attr('fill', '#000000')
+    .attr('x', (d) => { return x(d.day); })
+    .attr('y', (d) => { return y(d.freq); })
+    .attr('width', x.bandwidth())
+    .attr('height', (d) => { return 150 - y(d.freq); })
+    .attr('fill', '#000000')
 
   bars.selectAll('bar')
-      .data(dayFreqs)
-      .enter()
-      .append('text')
-      .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
-      .attr('class', 'barLabels')
-      .attr('y', (d) => { return y(d.freq) - 3; })
-      .attr('fill', '#000000')
-      .text((d) => { return d.freq; })
+    .data(dayFreqs)
+    .enter()
+    .append('text')
+    .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
+    .attr('class', 'barLabels')
+    .attr('y', (d) => { return y(d.freq) - 3; })
+    .attr('fill', '#000000')
+    .text((d) => { return d.freq; })
 }
 
 monthBars = () => {
@@ -307,7 +312,7 @@ monthBars = () => {
     .call(d3.axisBottom(x))
     .selectAll('text')
     .attr("transform", "translate(-13,10)rotate(-90)")
-     .style("text-anchor", "end");
+    .style("text-anchor", "end");
 
   let y = d3.scaleLinear()
     .range([150, 0])
@@ -320,19 +325,19 @@ monthBars = () => {
     .data(monthFreqs)
     .enter()
     .append('rect')
-      .attr('x', (d) => { return x(d.month); })
-      .attr('y', (d) => { return y(d.freq); })
-      .attr('width', x.bandwidth())
-      .attr('height', (d) => { return 150 - y(d.freq); })
-      .attr('fill', '#000000')
+    .attr('x', (d) => { return x(d.month); })
+    .attr('y', (d) => { return y(d.freq); })
+    .attr('width', x.bandwidth())
+    .attr('height', (d) => { return 150 - y(d.freq); })
+    .attr('fill', '#000000')
 
   bars.selectAll('bar')
-      .data(monthFreqs)
-      .enter()
-      .append('text')
-      .attr('x', (d) => { return x(d.month) + (x.bandwidth() / 6); })
-      .attr('class', 'barLabels')
-      .attr('y', (d) => { return y(d.freq) - 3; })
-      .attr('fill', '#000000')
-      .text((d) => { return d.freq; })
+    .data(monthFreqs)
+    .enter()
+    .append('text')
+    .attr('x', (d) => { return x(d.month) + (x.bandwidth() / 6); })
+    .attr('class', 'barLabels')
+    .attr('y', (d) => { return y(d.freq) - 3; })
+    .attr('fill', '#000000')
+    .text((d) => { return d.freq; })
 }
