@@ -65,11 +65,10 @@
       </div>
       <button onclick="barCharts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">Bar Charts</button>
       <div id="modalBar">
-        <div class="modal-content">
+        <div id="modalBarGraphs" class="modal-content">
            <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
-           <svg id="dayBar"></svg>
-           <br><br><br>
            <svg id="monthBar"></svg>
+           <br><br><br>
         </div>
       </div>
       </form>

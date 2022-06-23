@@ -19,7 +19,7 @@ body {
   width: calc(200px + 1vw);
 }
 
-.barLabels {
+.barLabels, .barNums {
   font-size: 10px;
   font-family: monospace;
 }
