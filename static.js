@@ -15,6 +15,7 @@ let monthSelected, daySelected;
 let busyDays = '';
 let busiest = 0;
 let total = 0;
+let dayFreqCounts = {};
 
 
 let lineTotal = 0;

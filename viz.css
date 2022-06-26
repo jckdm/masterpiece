@@ -19,7 +19,7 @@ body {
   width: calc(200px + 1vw);
 }
 
-.barLabels, .barNums {
+.barLabels, .barNums, .pieLabels {
   font-size: 10px;
   font-family: monospace;
 }
@@ -35,7 +35,7 @@ body {
    width: 100%;
    height: 100%;
    overflow: auto;
-   padding-top: calc(50px + 10vh);
+   padding-top: calc(25px + 8.5vh);
 }
 
 .modal-content {

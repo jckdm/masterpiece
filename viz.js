@@ -140,6 +140,32 @@ appendData = (filteredPieces, xScale, yScale) => {
      .on('mouseout', () => {
           d3.select('#tooltip').style('visibility', 'hidden')
      })
+
+     for (obj of objs) {
+       let c = obj.count;
+       if (c in dayFreqCounts) {
+         dayFreqCounts[c] += 1;
+       }
+       else {
+         dayFreqCounts[c] = 1;
+       }
+     }
+
+     let today = new Date();
+     let eoy = new Date(2023, 0, 1);
+
+     if (today < eoy) {
+      const start = new Date(2022, 0, 0);
+      const diff = today - start;
+      const day = Math.floor(diff / 86400000);
+
+      dayFreqCounts[0] = day - uniqueDays;
+     }
+     else {
+       dayFreqCounts[0] = 365 - uniqueDays;
+     }
+
+     console.log(dayFreqCounts);
 }
 
 analyze = () => {
@@ -195,12 +221,11 @@ analyze = () => {
 barCharts = () => {
   dayBars();
   monthBars();
+  dayFreqBars();
 }
 
 dayBars = () => {
-
-  let bars = d3.select('#modalBarGraphs')
-  .append('svg')
+  let bars = d3.select('#dayBar')
   .attr('width', 200)
   .attr('height', 200)
   .append('g')
@@ -353,4 +378,39 @@ monthBars = () => {
     .attr('y', (d) => { return y(d.freq) - 3; })
     .attr('fill', '#000000')
     .text((d) => { return d.freq; })
+}
+
+dayFreqBars = () => {
+  // set the color scale
+  const color = d3.scaleOrdinal()
+  .range(['#C9D4D5', '#CCD3E0', '#C5D5EC', '#C4D9D9', '#C8E5E2']);
+
+  let pieChart = d3.select('#dayFreqBarChart')
+  .attr('width', 200)
+  .attr('height', 200)
+  .append('g')
+  .attr('transform', 'translate(100,100)');
+
+  const pie = d3.pie().value(d => d[1]);
+  const data_pie = pie(Object.entries(dayFreqCounts));
+
+  const arcGen = d3.arc().innerRadius(40).outerRadius(75);
+
+  pieChart.selectAll('pies')
+  .data(data_pie)
+  .join('path')
+  .attr('d', d3.arc()
+  .innerRadius(40)
+  .outerRadius(80))
+  .attr('fill', d => color(d.data[0]))
+  .attr('stroke', '#808080')
+  .style('stroke-width', 0.5)
+
+  pieChart.selectAll('slices')
+  .data(data_pie)
+  .join('text')
+  .text(d => d.data[0])
+  .attr('transform', d => `translate(${arcGen.centroid(d)})`)
+  .style('text-anchor', 'middle')
+  .attr('class', 'pieLabels')
 }
