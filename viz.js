@@ -164,8 +164,6 @@ appendData = (filteredPieces, xScale, yScale) => {
      else {
        dayFreqCounts[0] = 365 - uniqueDays;
      }
-
-     console.log(dayFreqCounts);
 }
 
 analyze = () => {
@@ -414,3 +412,33 @@ dayFreqBars = () => {
   .style('text-anchor', 'middle')
   .attr('class', 'pieLabels')
 }
+
+sliderVal = () => {
+  const val = document.getElementById('vmins').value;
+  document.getElementById('labelvmins').innerHTML = `${val} minutes`;
+}
+
+verticals = () => {
+  const val = parseInt(document.getElementById('vmins').value);
+
+  let vals = {};
+
+  for (p1 of pieces) {
+    for (p2 of pieces) {
+      if ((p2.x >= (p1.x - (val / 2))) && (p2.x <= (p1.x + (val / 2)))) {
+        let key = `_${p2.x}`;
+        if (vals[key]) {
+          vals[key].push(p2);
+        }
+        else {
+          vals[key] = [p2];
+        }
+        pieces.splice(pieces.indexOf(p2), 1);
+      }
+    }
+  }
+  console.log(vals);
+}
+
+// i dont need to loop through every point bc once a point is included in a vertical, it doesn't need to be considered
+//

@@ -24,7 +24,7 @@ body {
   font-family: monospace;
 }
 
-#modal, #modalBar {
+#modal, #modalBar, #modalVerticals {
    display: none;
    position: fixed;
    z-index: 5;

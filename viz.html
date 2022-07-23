@@ -74,6 +74,16 @@
            <svg id="dayFreqBarChart"></svg>
         </div>
       </div>
+      <button onclick="$('#modalVerticals')[0].style.display = 'block'; return false;" id="open">Verticals</button>
+      <div id="modalVerticals">
+        <div class="modal-content">
+           <button onclick="$('#modalVerticals')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
+           <text>Use this slider to change the size of the range that will be applied when filtering data points to determine what range of the selected size has the most data points relative to other ranges of the same size.</text><br><br>
+           <input oninput="sliderVal();" id="vmins" type="range" value="30" step="5" min="0" max="60"><br>
+           <label id="labelvmins" for="vmins">30 minutes</label><br><br>
+           <button onclick="verticals(); return false;">Run Analysis</button>
+        </div>
+      </div>
       </form>
     <div id="tooltip">
       <text id="date"></text>
