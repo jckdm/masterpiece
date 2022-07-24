@@ -119,6 +119,7 @@ appendData = (filteredPieces, xScale, yScale) => {
      .attr('cy', (d) => yScale(d.y))
      .attr('stroke', 'black')
      .attr('stroke-width', '1')
+     .attr('id', (d) => `_${d.index}`)
      .attr('fill', (d) => colors[d.month])
      .attr('r', 5)
      .text((d) => d)
@@ -420,25 +421,43 @@ sliderVal = () => {
 
 verticals = () => {
   const val = parseInt(document.getElementById('vmins').value);
-
-  let vals = {};
+  const vals = {};
 
   for (p1 of pieces) {
     for (p2 of pieces) {
-      if ((p2.x >= (p1.x - (val / 2))) && (p2.x <= (p1.x + (val / 2)))) {
-        let key = `_${p2.x}`;
+      if (p2.x >= (p1.x - (val / 2)) && p2.x <= (p1.x + (val / 2))) {
+        let key = `_${p1.x}`;
         if (vals[key]) {
-          vals[key].push(p2);
+          vals[key].push(p2.index);
         }
         else {
-          vals[key] = [p2];
+          vals[key] = [p2.index];
         }
+        // this is destructive and must be undone if analysis is to be re-run
         pieces.splice(pieces.indexOf(p2), 1);
       }
     }
   }
   console.log(vals);
-}
+  let largestVert = 0;
 
-// i dont need to loop through every point bc once a point is included in a vertical, it doesn't need to be considered
-//
+  for (v in vals) {
+    let l = vals[v].length;
+    if (l > largestVert) {
+      largestVert = l;
+    }
+  }
+
+  d3.selectAll('circle').attr('fill', 'none');
+
+  for (v in vals) {
+    // only really works if there's a singular winner (not always the case)
+    // fine if they're far apart, but if they're close together, not clear which is which
+    if (vals[v].length == largestVert) {
+      for (index of vals[v]) {
+        console.log(index);
+        document.getElementById(`_${index}`).style.fill = 'white';
+      }
+    }
+  }
+}

@@ -15,7 +15,8 @@ Papa.parse('data.csv', {
         'date': r.Date,
         'day': r.Day,
         'hour': r.Hour,
-        'minute': r.Minute
+        'minute': r.Minute,
+        'index': total
       })
 
       total++;
