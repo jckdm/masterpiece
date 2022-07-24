@@ -415,30 +415,31 @@ dayFreqBars = () => {
 }
 
 sliderVal = () => {
-  const val = document.getElementById('vmins').value;
-  document.getElementById('labelvmins').innerHTML = `${val} minutes`;
-}
-
-verticals = () => {
   const val = parseInt(document.getElementById('vmins').value);
+  document.getElementById('labelvmins').innerHTML = `${val} minutes`;
+
+  d3.selectAll('circle').style('opacity', 1.0);
+
   const vals = {};
 
-  for (p1 of pieces) {
-    for (p2 of pieces) {
+  const piecesCopy = [];
+  piecesCopy.push.apply(piecesCopy, pieces);
+
+  for (p1 of piecesCopy) {
+    for (p2 of piecesCopy) {
       if (p2.x >= (p1.x - (val / 2)) && p2.x <= (p1.x + (val / 2))) {
         let key = `_${p1.x}`;
         if (vals[key]) {
-          vals[key].push(p2.index);
+          vals[key].push(p2);
         }
         else {
-          vals[key] = [p2.index];
+          vals[key] = [p2];
         }
-        // this is destructive and must be undone if analysis is to be re-run
-        pieces.splice(pieces.indexOf(p2), 1);
+        piecesCopy.splice(piecesCopy.indexOf(p2), 1);
       }
     }
   }
-  console.log(vals);
+
   let largestVert = 0;
 
   for (v in vals) {
@@ -448,16 +449,46 @@ verticals = () => {
     }
   }
 
-  d3.selectAll('circle').attr('fill', 'none');
+  d3.selectAll('circle').style('opacity', 0.1);
+  d3.select('#verticals').remove();
+
+  const xScale = d3.scaleLinear()
+    .domain([0, 10080]).range([padding, w - 15])
+
+  let vertCount = 0;
 
   for (v in vals) {
-    // only really works if there's a singular winner (not always the case)
-    // fine if they're far apart, but if they're close together, not clear which is which
     if (vals[v].length == largestVert) {
-      for (index of vals[v]) {
-        console.log(index);
-        document.getElementById(`_${index}`).style.fill = 'white';
+      vertCount++;
+    }
+  }
+
+  const d = new Array(vertCount).fill(0);
+
+  const g = d3.select('#main')
+              .selectAll('rect')
+              .data(d)
+              .enter()
+              .append('g')
+              .attr('id', 'verticals');
+
+  for (v in vals) {
+    if (vals[v].length == largestVert) {
+      let minX = 10080;
+      let maxX = -1;
+      for (p of vals[v]) {
+        if (p.x < minX) { minX = p.x; }
+        if (p.x > maxX) { maxX = p.x; }
+        document.getElementById(`_${p.index}`).style.opacity = 1;
       }
+
+      g.append('rect')
+       .attr('x', xScale(minX) - 2.5)
+       .attr('y', padding)
+       .attr('height', h - padding - padding)
+       .attr('width', maxX - minX + 2.5)
+       .style('fill', 'white')
+       .style('opacity', 0.1);
     }
   }
 }
