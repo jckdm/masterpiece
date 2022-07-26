@@ -1,5 +1,6 @@
 body {
   background-color: #333333;
+  font-family: monospace;
 }
 
 .gridV, .gridH line {
@@ -21,7 +22,6 @@ body {
 
 .barLabels, .barNums, .pieLabels {
   font-size: 10px;
-  font-family: monospace;
 }
 
 #modal, #modalBar, #modalVerticals {

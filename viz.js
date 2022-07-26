@@ -429,12 +429,8 @@ sliderVal = () => {
     for (p2 of piecesCopy) {
       if (p2.x >= (p1.x - (val / 2)) && p2.x <= (p1.x + (val / 2))) {
         let key = `_${p1.x}`;
-        if (vals[key]) {
-          vals[key].push(p2);
-        }
-        else {
-          vals[key] = [p2];
-        }
+        if (vals[key]) { vals[key].push(p2); }
+        else { vals[key] = [p2]; }
         piecesCopy.splice(piecesCopy.indexOf(p2), 1);
       }
     }
@@ -444,33 +440,16 @@ sliderVal = () => {
 
   for (v in vals) {
     let l = vals[v].length;
-    if (l > largestVert) {
-      largestVert = l;
-    }
+    if (l > largestVert) { largestVert = l; }
   }
 
   d3.selectAll('circle').style('opacity', 0.1);
-  d3.select('#verticals').remove();
+  d3.selectAll('.verticals').remove();
 
   const xScale = d3.scaleLinear()
     .domain([0, 10080]).range([padding, w - 15])
 
-  let vertCount = 0;
-
-  for (v in vals) {
-    if (vals[v].length == largestVert) {
-      vertCount++;
-    }
-  }
-
-  const d = new Array(vertCount).fill(0);
-
-  const g = d3.select('#main')
-              .selectAll('rect')
-              .data(d)
-              .enter()
-              .append('g')
-              .attr('id', 'verticals');
+  const ranges = [];
 
   for (v in vals) {
     if (vals[v].length == largestVert) {
@@ -479,16 +458,30 @@ sliderVal = () => {
       for (p of vals[v]) {
         if (p.x < minX) { minX = p.x; }
         if (p.x > maxX) { maxX = p.x; }
-        document.getElementById(`_${p.index}`).style.opacity = 1;
       }
+      ranges.push([minX, maxX]);
+    }
+    else { delete vals[v]; }
+  }
 
-      g.append('rect')
-       .attr('x', xScale(minX) - 2.5)
-       .attr('y', padding)
-       .attr('height', h - padding - padding)
-       .attr('width', maxX - minX + 2.5)
-       .style('fill', 'white')
-       .style('opacity', 0.1);
+  // apology for this slop: randomly selecting a G that's behind the data...
+  // so that the highlighted points can be hovered on
+  d3.select('.gridV')
+    .selectAll('rect')
+    .data(ranges)
+    .enter()
+    .append('rect')
+    .attr('x', (d) => xScale(d[0]) - 5)
+    .attr('y', padding)
+    .attr('height', h - padding - padding)
+    .attr('width', (d) => xScale(d[1]) - xScale(d[0]) + 10)
+    .attr('class', 'verticals')
+    .style('fill', 'white')
+    .style('opacity', 0.1);
+
+  for (v in vals) {
+    for (p of vals[v]) {
+      document.getElementById(`_${p.index}`).style.opacity = 1;
     }
   }
 }
