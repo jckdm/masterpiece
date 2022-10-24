@@ -223,119 +223,119 @@ barCharts = () => {
   dayFreqBars();
 }
 
-dayBars = () => {
-  let bars = d3.select('#dayBar')
-  .attr('width', 200)
-  .attr('height', 200)
-  .append('g')
-  .attr('transform', 'translate(100,100)');
-
-  let x = d3.scaleBand()
-  .range([0, 2 * Math.PI])
-  .align(0)
-  .domain(dayFreqs.map((d) => d.day));
-
-  let y = d3.scaleRadial()
-  .range([1, 100])
-  .domain([0, 39])
-
-  bars.selectAll('path')
-  .data(dayFreqs)
-  .enter()
-  .append('path')
-  .attr('fill', '#000000')
-  .attr('stroke', 'black')
-  .attr('stroke-width', '25')
-  .attr('d', d3.arc()
-    .innerRadius(35)
-    .outerRadius((d) => y(d.freq))
-    .startAngle((d) => x(d.day))
-    .endAngle((d) => x(d.day))
-    .padAngle(0.01)
-    .padRadius(100)
-  )
-
-  let labels = bars.append('g').classed('barLabels', true);
-  let labelRadius = 25;
-
-  labels.append('def')
-  .append('path')
-  .attr('id', 'label-path')
-  .attr('d', 'm0 ' + -labelRadius + ' a' + labelRadius + ' ' + labelRadius + ' 0 1,1 -0.01 0');
-
-  labels.selectAll('text')
-  .data(dayFreqs)
-  .enter()
-  .append('text')
-  .style('text-anchor', 'middle')
-  .style('fill', '#000000')
-  .append('textPath')
-  .attr('xlink:href', '#label-path')
-  .attr("startOffset", (d, i) => { return i * 100 / 7 + 0 / 7 + '%'; })
-  .text((d) => d.abb);
-
-  let labelNums = bars.append('g').classed('barNums', true);
-  let labelNumRadius = 40;
-
-  labelNums.append('def')
-  .append('path')
-  .attr('id', 'label-path-num')
-  .attr('d', 'm0 ' + -labelNumRadius + ' a' + labelNumRadius + ' ' + labelNumRadius + ' 0 1,1 -0.01 0');
-
-  labelNums.selectAll('text')
-  .data(dayFreqs)
-  .enter()
-  .append('text')
-  .style('text-anchor', 'middle')
-  .style('fill', '#F5F5F5')
-  .append('textPath')
-  .attr('xlink:href', '#label-path-num')
-  .attr("startOffset", (d, i) => { return i * 100 / 7 + 0 / 7 + '%'; })
-  .text((d) => d.freq);
-
-}
-
 // dayBars = () => {
-//   let bars = d3.select('#dayBar');
+//   let bars = d3.select('#dayBar')
+//   .attr('width', 200)
+//   .attr('height', 200)
+//   .append('g')
+//   .attr('transform', 'translate(100,100)');
 //
 //   let x = d3.scaleBand()
-//     .range([0, 300])
-//     .domain(dayFreqs.map((d) => { return d.day; }))
-//     .padding(0.25);
+//   .range([0, 2 * Math.PI])
+//   .align(0)
+//   .domain(dayFreqs.map((d) => d.day));
 //
-//   bars.append('g')
-//     .call(d3.axisBottom(x))
-//     .selectAll('text')
-//     .attr("transform", "translate(-13,10)rotate(-90)")
-//     .style("text-anchor", "end");
+//   let y = d3.scaleRadial()
+//   .range([1, 100])
+//   .domain([0, 39])
 //
-//   let y = d3.scaleLinear()
-//     .range([150, 0])
-//     .domain([0, 150]);
+//   bars.selectAll('path')
+//   .data(dayFreqs)
+//   .enter()
+//   .append('path')
+//   .attr('fill', '#000000')
+//   .attr('stroke', 'black')
+//   .attr('stroke-width', '25')
+//   .attr('d', d3.arc()
+//     .innerRadius(35)
+//     .outerRadius((d) => y(d.freq))
+//     .startAngle((d) => x(d.day))
+//     .endAngle((d) => x(d.day))
+//     .padAngle(0.01)
+//     .padRadius(100)
+//   )
 //
-//   bars.append('g')
-//     .call(d3.axisLeft(y));
+//   let labels = bars.append('g').classed('barLabels', true);
+//   let labelRadius = 25;
 //
-//   bars.selectAll('bar')
-//     .data(dayFreqs)
-//     .enter()
-//     .append('rect')
-//     .attr('x', (d) => { return x(d.day); })
-//     .attr('y', (d) => { return y(d.freq); })
-//     .attr('width', x.bandwidth())
-//     .attr('height', (d) => { return 150 - y(d.freq); })
-//     .attr('fill', '#000000')
+//   labels.append('def')
+//   .append('path')
+//   .attr('id', 'label-path')
+//   .attr('d', 'm0 ' + -labelRadius + ' a' + labelRadius + ' ' + labelRadius + ' 0 1,1 -0.01 0');
 //
-//   bars.selectAll('bar')
-//     .data(dayFreqs)
-//     .enter()
-//     .append('text')
-//     .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
-//     .attr('class', 'barLabels')
-//     .attr('y', (d) => { return y(d.freq) - 3; })
-//     .attr('fill', '#000000')
-//     .text((d) => { return d.freq; })
+//   labels.selectAll('text')
+//   .data(dayFreqs)
+//   .enter()
+//   .append('text')
+//   .style('text-anchor', 'middle')
+//   .style('fill', '#000000')
+//   .append('textPath')
+//   .attr('xlink:href', '#label-path')
+//   .attr("startOffset", (d, i) => { return i * 100 / 7 + 0 / 7 + '%'; })
+//   .text((d) => d.abb);
+//
+//   let labelNums = bars.append('g').classed('barNums', true);
+//   let labelNumRadius = 40;
+//
+//   labelNums.append('def')
+//   .append('path')
+//   .attr('id', 'label-path-num')
+//   .attr('d', 'm0 ' + -labelNumRadius + ' a' + labelNumRadius + ' ' + labelNumRadius + ' 0 1,1 -0.01 0');
+//
+//   labelNums.selectAll('text')
+//   .data(dayFreqs)
+//   .enter()
+//   .append('text')
+//   .style('text-anchor', 'middle')
+//   .style('fill', '#F5F5F5')
+//   .append('textPath')
+//   .attr('xlink:href', '#label-path-num')
+//   .attr("startOffset", (d, i) => { return i * 100 / 7 + 0 / 7 + '%'; })
+//   .text((d) => d.freq);
+//
 // }
+
+dayBars = () => {
+  let bars = d3.select('#dayBar');
+
+  let x = d3.scaleBand()
+    .range([0, 300])
+    .domain(dayFreqs.map((d) => { return d.day; }))
+    .padding(0.25);
+
+  bars.append('g')
+    .call(d3.axisBottom(x))
+    .selectAll('text')
+    .attr("transform", "translate(-13,10)rotate(-90)")
+    .style("text-anchor", "end");
+
+  let y = d3.scaleLinear()
+    .range([150, 0])
+    .domain([0, 150]);
+
+  bars.append('g')
+    .call(d3.axisLeft(y));
+
+  bars.selectAll('bar')
+    .data(dayFreqs)
+    .enter()
+    .append('rect')
+    .attr('x', (d) => { return x(d.day); })
+    .attr('y', (d) => { return y(d.freq); })
+    .attr('width', x.bandwidth())
+    .attr('height', (d) => { return 150 - y(d.freq); })
+    .attr('fill', '#000000')
+
+  bars.selectAll('bar')
+    .data(dayFreqs)
+    .enter()
+    .append('text')
+    .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
+    .attr('class', 'barLabels')
+    .attr('y', (d) => { return y(d.freq) - 3; })
+    .attr('fill', '#000000')
+    .text((d) => { return d.freq; })
+}
 
 monthBars = () => {
   let bars = d3.select('#monthBar');
@@ -415,6 +415,7 @@ dayFreqBars = () => {
 }
 
 sliderVal = () => {
+  document.getElementById('verticalSpans').innerHTML = '';
   const val = parseInt(document.getElementById('vmins').value);
   document.getElementById('labelvmins').innerHTML = `${val} minutes`;
 
@@ -479,9 +480,40 @@ sliderVal = () => {
     .style('fill', 'white')
     .style('opacity', 0.1);
 
+  const daysForVerticals = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  for (r of ranges) {
+    let startDay = daysForVerticals[Math.floor((r[0] / 60) / 24)];
+    let endDay = daysForVerticals[Math.floor((r[1] / 60) / 24)]
+
+    let num24sStart = Math.floor((r[0] / 60) / 24) * 24;
+    let num24sEnd = Math.floor((r[1] / 60) / 24) * 24;
+
+    let startHours = Math.floor(r[0] / 60) - num24sStart;
+    let endHours = Math.floor(r[1] / 60) - num24sEnd;
+
+    let startMinutes = r[0] - (60 * startHours) - (num24sStart * 60);
+    let endMinutes = r[1] - (60 * endHours) - (num24sEnd * 60);
+
+    const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
+    const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
+    const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
+    const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
+
+    let p = document.createElement('p');
+    p.innerText = `${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
+    document.getElementById('verticalSpans').appendChild(p);
+  }
+
   for (v in vals) {
     for (p of vals[v]) {
       document.getElementById(`_${p.index}`).style.opacity = 1;
     }
   }
+}
+
+clearVerticals = () => {
+  d3.selectAll('circle').style('opacity', 1.0);
+  d3.selectAll('.verticals').remove();
+  $('#modalVerticals')[0].style.display = 'none';
 }

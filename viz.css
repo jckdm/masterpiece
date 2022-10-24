@@ -58,10 +58,16 @@ body {
    color: #000000;
 }
 
-.close:hover {
+.close:hover, .clear:hover {
    color: #FFFFFF;
    text-decoration: none;
    cursor: pointer;
+}
+
+.clear {
+  float: right;
+  font-size: calc(8px + .25vw + .25vh);
+  color: #000000;
 }
 
 td {
