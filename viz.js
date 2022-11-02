@@ -412,6 +412,20 @@ dayFreqBars = () => {
   .attr('transform', d => `translate(${arcGen.centroid(d)})`)
   .style('text-anchor', 'middle')
   .attr('class', 'pieLabels')
+
+  let totalDayFreqCounts = 0;
+  for (day in dayFreqCounts) { totalDayFreqCounts += dayFreqCounts[day]; }
+
+  for (day in dayFreqCounts) {
+    let tr = document.createElement('tr');
+    let d = document.createElement('td');
+    let dd = document.createElement('td');
+    d.innerText = day + 'x';
+    dd.innerText = (dayFreqCounts[day] / totalDayFreqCounts * 100).toFixed(2) + '%';
+    tr.appendChild(d);
+    tr.appendChild(dd);
+    document.getElementById('pieKey').appendChild(tr);
+  }
 }
 
 sliderVal = () => {
