@@ -3,6 +3,10 @@ body {
   font-family: monospace;
 }
 
+form {
+  position: fixed;
+}
+
 .gridV, .gridH line {
   color: #555555;
 }

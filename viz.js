@@ -62,7 +62,7 @@ scale = () => {
     .tickFormat((d, i) => xTickFormat[i]);
 
   const yScale = d3.scaleLinear()
-    .domain([1, yMax]).range([h - padding, padding]);
+    .domain([yMax, 1]).range([h - padding, padding]);
 
   const yAxis = d3.axisLeft().scale(yScale)
     .tickValues(yTickValues)
@@ -223,78 +223,6 @@ barCharts = () => {
   dayFreqBars();
 }
 
-// dayBars = () => {
-//   let bars = d3.select('#dayBar')
-//   .attr('width', 200)
-//   .attr('height', 200)
-//   .append('g')
-//   .attr('transform', 'translate(100,100)');
-//
-//   let x = d3.scaleBand()
-//   .range([0, 2 * Math.PI])
-//   .align(0)
-//   .domain(dayFreqs.map((d) => d.day));
-//
-//   let y = d3.scaleRadial()
-//   .range([1, 100])
-//   .domain([0, 39])
-//
-//   bars.selectAll('path')
-//   .data(dayFreqs)
-//   .enter()
-//   .append('path')
-//   .attr('fill', '#000000')
-//   .attr('stroke', 'black')
-//   .attr('stroke-width', '25')
-//   .attr('d', d3.arc()
-//     .innerRadius(35)
-//     .outerRadius((d) => y(d.freq))
-//     .startAngle((d) => x(d.day))
-//     .endAngle((d) => x(d.day))
-//     .padAngle(0.01)
-//     .padRadius(100)
-//   )
-//
-//   let labels = bars.append('g').classed('barLabels', true);
-//   let labelRadius = 25;
-//
-//   labels.append('def')
-//   .append('path')
-//   .attr('id', 'label-path')
-//   .attr('d', 'm0 ' + -labelRadius + ' a' + labelRadius + ' ' + labelRadius + ' 0 1,1 -0.01 0');
-//
-//   labels.selectAll('text')
-//   .data(dayFreqs)
-//   .enter()
-//   .append('text')
-//   .style('text-anchor', 'middle')
-//   .style('fill', '#000000')
-//   .append('textPath')
-//   .attr('xlink:href', '#label-path')
-//   .attr("startOffset", (d, i) => { return i * 100 / 7 + 0 / 7 + '%'; })
-//   .text((d) => d.abb);
-//
-//   let labelNums = bars.append('g').classed('barNums', true);
-//   let labelNumRadius = 40;
-//
-//   labelNums.append('def')
-//   .append('path')
-//   .attr('id', 'label-path-num')
-//   .attr('d', 'm0 ' + -labelNumRadius + ' a' + labelNumRadius + ' ' + labelNumRadius + ' 0 1,1 -0.01 0');
-//
-//   labelNums.selectAll('text')
-//   .data(dayFreqs)
-//   .enter()
-//   .append('text')
-//   .style('text-anchor', 'middle')
-//   .style('fill', '#F5F5F5')
-//   .append('textPath')
-//   .attr('xlink:href', '#label-path-num')
-//   .attr("startOffset", (d, i) => { return i * 100 / 7 + 0 / 7 + '%'; })
-//   .text((d) => d.freq);
-//
-// }
-
 dayBars = () => {
   let bars = d3.select('#dayBar');
 
@@ -380,6 +308,8 @@ monthBars = () => {
 }
 
 dayFreqBars = () => {
+  document.getElementById('pieKey').innerHTML = '';
+
   // set the color scale
   const color = d3.scaleOrdinal()
   .range(['#C9D4D5', '#CCD3E0', '#C5D5EC', '#C4D9D9', '#C8E5E2']);
@@ -438,16 +368,34 @@ sliderVal = () => {
   const vals = {};
 
   const piecesCopy = [];
+  let piecesCopyCopy = [];
   piecesCopy.push.apply(piecesCopy, pieces);
+  piecesCopyCopy.push.apply(piecesCopyCopy, pieces);
 
-  for (p1 of piecesCopy) {
+  for (p1 of piecesCopyCopy) {
     for (p2 of piecesCopy) {
+      let added = false;
       if (p2.x >= (p1.x - (val / 2)) && p2.x <= (p1.x + (val / 2))) {
-        let key = `_${p1.x}`;
+        let key = `_${p1.x}_mid`;
         if (vals[key]) { vals[key].push(p2); }
         else { vals[key] = [p2]; }
-        piecesCopy.splice(piecesCopy.indexOf(p2), 1);
+        added = true;
       }
+      if (val != 0) {
+        if (p1.x - p2.x <= val && p1.x - p2.x >= 0) {
+          let key = `_${p1.x}_start`;
+          if (vals[key]) { vals[key].push(p2); }
+          else { vals[key] = [p2]; }
+          added = true;
+        }
+        if (p1.x - p2.x >= -val && p1.x - p2.x <= 0) {
+          let key = `_${p1.x}_end`;
+          if (vals[key]) { vals[key].push(p2); }
+          else { vals[key] = [p2]; }
+          added = true;
+        }
+      }
+      if (added) { piecesCopy.splice(piecesCopy.indexOf(p2), 1); }
     }
   }
 
@@ -461,8 +409,7 @@ sliderVal = () => {
   d3.selectAll('circle').style('opacity', 0.1);
   d3.selectAll('.verticals').remove();
 
-  const xScale = d3.scaleLinear()
-    .domain([0, 10080]).range([padding, w - 15])
+  const xScale = d3.scaleLinear().domain([0, 10080]).range([padding, w - 15]);
 
   const ranges = [];
 
@@ -474,54 +421,56 @@ sliderVal = () => {
         if (p.x < minX) { minX = p.x; }
         if (p.x > maxX) { maxX = p.x; }
       }
-      ranges.push([minX, maxX]);
+      if (maxX - minX == val) { ranges.push([minX, maxX, vals[v].length]); }
     }
     else { delete vals[v]; }
   }
 
-  // apology for this slop: randomly selecting a G that's behind the data...
-  // so that the highlighted points can be hovered on
-  d3.select('.gridV')
-    .selectAll('rect')
-    .data(ranges)
-    .enter()
-    .append('rect')
-    .attr('x', (d) => xScale(d[0]) - 5)
-    .attr('y', padding)
-    .attr('height', h - padding - padding)
-    .attr('width', (d) => xScale(d[1]) - xScale(d[0]) + 10)
-    .attr('class', 'verticals')
-    .style('fill', 'white')
-    .style('opacity', 0.1);
+  if (ranges.length > 0) {
+    // apology for this slop: randomly selecting a G that's behind the data...
+    // so that the highlighted points can be hovered on
+    d3.select('.gridV')
+      .selectAll('rect')
+      .data(ranges)
+      .enter()
+      .append('rect')
+      .attr('x', (d) => xScale(d[0]) - 5)
+      .attr('y', padding)
+      .attr('height', h - padding - padding)
+      .attr('width', (d) => xScale(d[1]) - xScale(d[0]) + 10)
+      .attr('class', 'verticals')
+      .style('fill', 'white')
+      .style('opacity', 0.1);
 
-  const daysForVerticals = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const daysForVerticals = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-  for (r of ranges) {
-    let startDay = daysForVerticals[Math.floor((r[0] / 60) / 24)];
-    let endDay = daysForVerticals[Math.floor((r[1] / 60) / 24)]
+    for (r of ranges) {
+      let startDay = daysForVerticals[Math.floor((r[0] / 60) / 24)];
+      let endDay = daysForVerticals[Math.floor((r[1] / 60) / 24)]
 
-    let num24sStart = Math.floor((r[0] / 60) / 24) * 24;
-    let num24sEnd = Math.floor((r[1] / 60) / 24) * 24;
+      let num24sStart = Math.floor((r[0] / 60) / 24) * 24;
+      let num24sEnd = Math.floor((r[1] / 60) / 24) * 24;
 
-    let startHours = Math.floor(r[0] / 60) - num24sStart;
-    let endHours = Math.floor(r[1] / 60) - num24sEnd;
+      let startHours = Math.floor(r[0] / 60) - num24sStart;
+      let endHours = Math.floor(r[1] / 60) - num24sEnd;
 
-    let startMinutes = r[0] - (60 * startHours) - (num24sStart * 60);
-    let endMinutes = r[1] - (60 * endHours) - (num24sEnd * 60);
+      let startMinutes = r[0] - (60 * startHours) - (num24sStart * 60);
+      let endMinutes = r[1] - (60 * endHours) - (num24sEnd * 60);
 
-    const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
-    const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
-    const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
-    const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
+      const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
+      const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
+      const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
+      const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
 
-    let p = document.createElement('p');
-    p.innerText = `${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
-    document.getElementById('verticalSpans').appendChild(p);
-  }
+      let p = document.createElement('p');
+      p.innerText = `${r[2]}x: ${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
+      document.getElementById('verticalSpans').appendChild(p);
+    }
 
-  for (v in vals) {
-    for (p of vals[v]) {
-      document.getElementById(`_${p.index}`).style.opacity = 1;
+    for (v in vals) {
+      for (p of vals[v]) {
+        document.getElementById(`_${p.index}`).style.opacity = 1;
+      }
     }
   }
 }
