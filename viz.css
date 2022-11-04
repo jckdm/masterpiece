@@ -3,17 +3,11 @@ body {
   font-family: monospace;
 }
 
-form {
-  position: fixed;
-}
+form { position: fixed; }
 
-.gridV, .gridH line {
-  color: #555555;
-}
+.gridV, .gridH line { color: #555555; }
 
-.yaxis, .xaxis, .yaxis line, .xaxis line {
-  color: #FFFFFF;
-}
+.yaxis, .xaxis, .yaxis line, .xaxis line { color: #FFFFFF; }
 
 #tooltip {
   position: absolute;
@@ -24,48 +18,54 @@ form {
   width: calc(200px + 1vw);
 }
 
-.barLabels, .barNums, .pieLabels, #pieKey {
-  font-size: 10px;
-}
+.barLabels, .barNums, .pieLabels, #pieKey, .label { font-size: 10px; }
 
 #modal, #modalBar, #modalVerticals {
-   display: none;
-   position: fixed;
-   z-index: 5;
-   bottom: 0;
-   left: 0;
-   top: 0;
-   right: 0;
-   width: 100%;
-   height: 100%;
-   overflow: auto;
-   padding-top: calc(25px + 8.5vh);
+  display: none;
+  position: fixed;
+  z-index: 5;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding-top: calc(25px + 5vh);
 }
 
-.modal-content {
-   background-color: #F5F5F5;
-   margin: auto;
-   padding: calc(12px + 0.35vw + 0.35vh);
-   width: 67.5%;
-   overflow: auto;
-   overflow-y: auto;
-   border: calc(0.15vw + 0.15vh) solid #000000;
-   font-size: calc(8px + 0.75vw);
-   text-align: left;
-   color: #333333;
-   line-height: 1.25em;
+.modal-content, .modal-content-graphs {
+  background-color: #F5F5F5;
+  margin: auto;
+  padding: calc(12px + 0.35vw + 0.35vh);
+  width: 67.5%;
+  overflow: auto;
+  overflow-y: auto;
+  border: calc(0.15vw + 0.15vh) solid #000000;
+  font-size: calc(8px + 0.75vw);
+  text-align: left;
+  color: #333333;
+  line-height: 1.25em;
+}
+
+.modal-content-graphs { text-align: center; }
+
+#charts {
+  display: inline-block;
+  vertical-align: middle;
+  width: 90%;
 }
 
 .close {
-   float: right;
-   font-size: calc(20px + 1.25vw + 1.25vh);
-   color: #000000;
+  float: right;
+  font-size: calc(8px + 1.5vw + 1.5vh);
+  color: #000000;
 }
 
 .close:hover, .clear:hover {
-   color: #FFFFFF;
-   text-decoration: none;
-   cursor: pointer;
+  color: #FFFFFF;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .clear {
@@ -79,21 +79,25 @@ td {
   padding-bottom: 10px;
 }
 
+#pieBox {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#pieKey {
+  padding-top: 25spx;
+  padding-bottom: 25px;
+  height: 200px;
+  vertical-align: middle;
+  line-height: 1em;
+}
+
 #pieKey td {
   padding-right: 10px;
   padding-bottom: 5px;
 }
 
-#pieBox {
-  width: 100%;
-  margin: auto;
-}
-
 #dayFreqBarChart {
   width: 200px;
   float: left;
-}
-
-#pieKey {
-  margin-left: 200px;
 }

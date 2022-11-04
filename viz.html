@@ -65,16 +65,21 @@
       </div>
       <button onclick="barCharts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">Charts</button>
       <div id="modalBar">
-        <div id="modalBarGraphs" class="modal-content">
-           <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
-           <svg id="monthBar"></svg>
-           <br><br><br>
-           <svg id="dayBar"></svg>
-           <br><br><br>
-           <div id="pieBox">
-             <svg id="dayFreqBarChart"></svg>
-             <table id="pieKey"></table>
-           </div>
+        <div id="modalBarGraphs" class="modal-content-graphs">
+          <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
+          <div id="charts">
+          <label class="label" id="labelMonthBar" for="monthBar">Instances Per Month</label><br>
+          <svg id="monthBar"></svg>
+          <br><br>
+          <label class="label" id="labelDayBar" for="dayBar">Instances Per Day of Week</label><br>
+          <svg id="dayBar"></svg>
+          <br><br>
+            <label class="label" id="labelPie" for="pieBox">Frequency Per Day, as Percentages of the Year</label><br>
+          <div id="pieBox">
+            <svg id="dayFreqBarChart"></svg>
+            <table id="pieKey"></table>
+          </div>
+         </div>
         </div>
       </div>
       <button onclick="$('#modalVerticals')[0].style.display = 'block'; return false;" id="open">Verticals</button>

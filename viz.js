@@ -346,12 +346,17 @@ dayFreqBars = () => {
   let totalDayFreqCounts = 0;
   for (day in dayFreqCounts) { totalDayFreqCounts += dayFreqCounts[day]; }
 
-  for (day in dayFreqCounts) {
+  let sortedDayFreqCounts = [];
+
+  for (day in dayFreqCounts) { sortedDayFreqCounts.push([day, dayFreqCounts[day]]); }
+  sortedDayFreqCounts.sort((a, b) => b[1] - a[1]);
+
+  for (day of sortedDayFreqCounts) {
     let tr = document.createElement('tr');
     let d = document.createElement('td');
     let dd = document.createElement('td');
-    d.innerText = day + 'x';
-    dd.innerText = (dayFreqCounts[day] / totalDayFreqCounts * 100).toFixed(2) + '%';
+    d.innerText = day[0] + ':';
+    dd.innerText = (day[1] / totalDayFreqCounts * 100).toFixed(2) + '%';
     tr.appendChild(d);
     tr.appendChild(dd);
     document.getElementById('pieKey').appendChild(tr);
@@ -402,8 +407,19 @@ sliderVal = () => {
   let largestVert = 0;
 
   for (v in vals) {
-    let l = vals[v].length;
-    if (l > largestVert) { largestVert = l; }
+    let currV = vals[v];
+    let l = currV.length;
+    if (l > largestVert) {
+      let minX = 10080;
+      let maxX = -1;
+      for (p in currV) {
+        if (currV[p].x < minX) { minX = currV[p].x; }
+        if (currV[p].x > maxX) { maxX = currV[p].x; }
+      }
+      if (maxX - minX == val) {
+        largestVert = l;
+      }
+    }
   }
 
   d3.selectAll('circle').style('opacity', 0.1);
@@ -421,7 +437,9 @@ sliderVal = () => {
         if (p.x < minX) { minX = p.x; }
         if (p.x > maxX) { maxX = p.x; }
       }
+      // still needed: there could be incorrectly-sized ranges with the max as well
       if (maxX - minX == val) { ranges.push([minX, maxX, vals[v].length]); }
+      else { delete vals[v]; }
     }
     else { delete vals[v]; }
   }
