@@ -308,7 +308,7 @@ monthBars = () => {
 }
 
 dayFreqBars = () => {
-  document.getElementById('pieKey').innerHTML = '';
+  document.getElementById('pieKey').innerHTML = '<tr><td class="und">freq</td><td class="und">num</td><td class="und">pct</td></tr>';
 
   // set the color scale
   const color = d3.scaleOrdinal()
@@ -355,10 +355,22 @@ dayFreqBars = () => {
     let tr = document.createElement('tr');
     let d = document.createElement('td');
     let dd = document.createElement('td');
+    let ddd = document.createElement('td');
     d.innerText = day[0] + ':';
-    dd.innerText = (day[1] / totalDayFreqCounts * 100).toFixed(2) + '%';
+
+    let ddLen = day[1].toString().length;
+    if (ddLen == 1) { dd.innerText = '00'.concat(day[1]); }
+    else if (ddLen == 2) { dd.innerText = '0'.concat(day[1]); }
+    else { dd.innerText = day[1]; }
+
+    let dddPercent = (day[1] / totalDayFreqCounts * 100).toFixed(2);
+    let dddLen = dddPercent.length;
+    if (dddLen == 4) { ddd.innerText = '0'.concat(dddPercent) + '%'; }
+    else { ddd.innerText = dddPercent + '%'; }
+
     tr.appendChild(d);
     tr.appendChild(dd);
+    tr.appendChild(ddd);
     document.getElementById('pieKey').appendChild(tr);
   }
 }
