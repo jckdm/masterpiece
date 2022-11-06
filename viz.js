@@ -462,6 +462,8 @@ sliderVal = () => {
 
     const daysForVerticals = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+    ranges.sort((a, b) => a[0] - b[0]);
+
     for (r of ranges) {
       let startDay = daysForVerticals[Math.floor((r[0] / 60) / 24)];
       let endDay = daysForVerticals[Math.floor((r[1] / 60) / 24)]
