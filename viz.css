@@ -3,6 +3,8 @@ body {
   font-family: monospace;
 }
 
+a, a:visited { color: blue; }
+
 form { position: fixed; }
 
 .gridV, .gridH line { color: #555555; }
@@ -27,7 +29,7 @@ form { position: fixed; }
 
 .barLabels, .barNums, .pieLabels, #pieKey, .label { font-size: 10px; }
 
-#modal, #modalBar, #modalVerticals, #modalUpload {
+#modal, #modalBar, #modalVerticals, #modalUpload, #modalInfo {
   display: none;
   position: fixed;
   z-index: 5;
