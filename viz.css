@@ -18,9 +18,16 @@ form { position: fixed; }
   width: calc(200px + 1vw);
 }
 
+.form-right {
+  float: right;
+  right: 7.5px;
+}
+
+#uploadError { color: red; }
+
 .barLabels, .barNums, .pieLabels, #pieKey, .label { font-size: 10px; }
 
-#modal, #modalBar, #modalVerticals {
+#modal, #modalBar, #modalVerticals, #modalUpload {
   display: none;
   position: fixed;
   z-index: 5;

@@ -1,3 +1,120 @@
+parseUploadedFile = () => {
+  $('#uploadError')[0].innerText = "";
+  let fileList = $('#uploadedFile')[0].files;
+
+  if (fileList.length < 1) {
+    $('#uploadError')[0].innerText = "No file uploaded."
+  }
+
+  const file = fileList[0];
+
+  if (file.name.split('.')[1] != 'csv') {
+    $('#uploadError')[0].innerText = "Incorrect file type."
+  }
+
+  $.ajax({
+    type: "GET",
+    url: file.name,
+    success: (data) => {
+      d3.select('#main').remove();
+
+      document.getElementById('verticalSpans').innerHTML = '';
+      document.getElementById('vmins').value = 30;
+      document.getElementById('labelvmins').innerHTML = `30 minutes`;
+
+      pieces = [];
+      objs = [];
+      gaps = [];
+      dayFreqs = [{'day': 'Monday', 'abb': 'M', 'freq': 0},{'day': 'Tuesday', 'abb': 'T', 'freq': 0},{'day': 'Wednesday', 'abb': 'W', 'freq': 0},{'day': 'Thursday', 'abb': 'Th', 'freq': 0},{'day': 'Friday', 'abb': 'F', 'freq': 0},{'day': 'Saturday', 'abb': 'S', 'freq': 0},{'day': 'Sunday', 'abb': 'Su', 'freq': 0}];
+      monthFreqs = [{'month': 'January', 'freq': 0},{'month': 'February', 'freq': 0},{'month': 'March', 'freq': 0},{'month': 'April', 'freq': 0},{'month': 'May', 'freq': 0},{'month': 'June', 'freq': 0},{'month': 'July', 'freq': 0},{'month': 'August', 'freq': 0},{'month': 'September', 'freq': 0},{'month': 'October', 'freq': 0},{'month': 'November', 'freq': 0},{'month': 'December', 'freq': 0}];
+      count = 0;
+      lastD = null;
+      yesterday = '';
+      uniqueDays = 0;
+      filteredPieces = [];
+      monthSelected, daySelected;
+      busyDays = '';
+      busiest = 0;
+      total = 0;
+      dayFreqCounts = {};
+
+      Papa.parse(data, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        step: (row) => parseRow(row),
+        complete: () => {
+          d3.select('body').append('svg')
+            .attr('id', 'main')
+            .attr('width', w)
+            .attr('height', h);
+          scale();
+        }
+      })
+    }
+  });
+}
+
+parseRow = (row) => {
+  const r = row.data;
+  const x = (days[r.Day] * 1440) + (r.Hour * 60) + r.Minute;
+  const y = monthMarks[months[r.Month]] + r.Date;
+
+  pieces.push({
+    'x': x,
+    'y': y,
+    'month': r.Month,
+    'date': r.Date,
+    'day': r.Day,
+    'hour': r.Hour,
+    'minute': r.Minute,
+    'index': total
+  })
+
+  total++;
+
+  dayFreqs[days[r.Day]].freq += 1;
+  monthFreqs[months[r.Month]].freq += 1;
+
+  const d = new Date(2022, months[r.Month], r.Date, r.Hour, r.Minute);
+
+  if (count != 0) {
+    gaps.push(d - lastD);
+    lastD = d;
+    count++;
+  }
+  else {
+    count++;
+    lastD = d;
+  }
+
+  const today = `${r.Month} ${r.Date}`;
+  const now = `${r.Hour} ${r.Minute}`;
+
+  if (today == yesterday) {
+    objs[uniqueDays - 1].count += 1;
+    objs[uniqueDays - 1].times.push(now);
+  }
+  else {
+    objs.push({
+      'day': today,
+      'count': 1,
+      'times': [now]
+    })
+    let yesterdaysCount = objs[uniqueDays - 1]?.count;
+    if (yesterdaysCount > busiest) {
+      busiest = yesterdaysCount;
+      busyDays = yesterday;
+    }
+    else if (yesterdaysCount == busiest) {
+      busyDays += `, ${yesterday}`;
+    }
+    uniqueDays++;
+  }
+
+  yesterday = today;
+}
+
 scale = () => {
   // remove data
   d3.selectAll('circle').remove();
@@ -168,7 +285,9 @@ appendData = (filteredPieces, xScale, yScale) => {
 }
 
 analyze = () => {
-  if ($('#shortest')[0].innerHTML == '') {
+  // TO DO: think of a new condition so you don't recalculate all this stuff
+  // each time you open the window. but make it work with uploading files
+  // if ($('#shortest')[0].innerHTML == '') {
     let shortest = Number.MAX_VALUE;
     let longest = Number.MIN_VALUE;
 
@@ -214,7 +333,7 @@ analyze = () => {
     $('#total')[0].innerHTML = total;
 
     $('#active')[0].innerHTML = uniqueDays;
-  }
+  // }
 }
 
 barCharts = () => {

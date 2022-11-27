@@ -94,6 +94,22 @@
         </div>
       </div>
       </form>
+      <form class="form-right">
+        <button onclick="$('#modalUpload')[0].style.display = 'block'; return false;" id="open">Upload Data File</button>
+        <div id="modalUpload">
+          <div class="modal-content">
+            <button onclick="$('#modalUpload')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
+             <text>Upload a .csv file with headers:</text><br>
+             <text>Month,Day,Date,Hour,Minute</text><br><br>
+             <div id="fileUploader">
+               <input id="uploadedFile" type="file"></input>
+             </div>
+             <br><br>
+             <button onclick="parseUploadedFile(); return false;">Parse File</button>
+             <text id="uploadError"><text>
+          </div>
+        </div>
+      </form>
     <div id="tooltip">
       <text id="date"></text>
     </div>
