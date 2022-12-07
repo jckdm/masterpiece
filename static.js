@@ -11,6 +11,7 @@ let lastD = null;
 let yesterday = '';
 let uniqueDays = 0;
 let filteredPieces = [];
+let xScale, yScale;
 let monthSelected, daySelected;
 let busyDays = '';
 let busiest = 0;

@@ -29,7 +29,7 @@ form { position: fixed; }
 
 .barLabels, .barNums, .pieLabels, #pieKey, .label { font-size: 10px; }
 
-#modal, #modalBar, #modalVerticals, #modalUpload, #modalInfo {
+#modal, #modalBar, #modalVerticals, #modalUpload, #modalInfo, #modalStart {
   display: none;
   position: fixed;
   z-index: 5;
@@ -54,10 +54,14 @@ form { position: fixed; }
   font-size: calc(8px + 0.75vw);
   text-align: left;
   color: #333333;
-  line-height: 1.25em;
 }
 
 .modal-content-graphs { text-align: center; }
+
+#modalStart {
+  display: block;
+  background-color: #8080804D;
+}
 
 #charts {
   display: inline-block;

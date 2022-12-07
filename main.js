@@ -9,6 +9,6 @@ Papa.parse('data.csv', {
       .attr('id', 'main')
       .attr('width', w)
       .attr('height', h);
-    scale();
+    scale(false);
   }
 });

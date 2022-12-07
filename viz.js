@@ -19,8 +19,8 @@ parseUploadedFile = () => {
       d3.select('#main').remove();
 
       document.getElementById('verticalSpans').innerHTML = '';
-      document.getElementById('vmins').value = 30;
-      document.getElementById('labelvmins').innerHTML = `30 minutes`;
+      document.getElementById('vmins').value = 60;
+      document.getElementById('labelvmins').innerHTML = `60 minutes`;
 
       pieces = [];
       objs = [];
@@ -48,7 +48,7 @@ parseUploadedFile = () => {
             .attr('id', 'main')
             .attr('width', w)
             .attr('height', h);
-          scale();
+          scale(true);
         }
       })
     }
@@ -115,7 +115,7 @@ parseRow = (row) => {
   yesterday = today;
 }
 
-scale = () => {
+scale = (flag = false) => {
   // remove data
   d3.selectAll('circle').remove();
   // remove X
@@ -171,14 +171,14 @@ scale = () => {
     }
   }
 
-  const xScale = d3.scaleLinear()
+  xScale = d3.scaleLinear()
     .domain([0, xMax]).range([padding, w - 15])
 
   const xAxis = d3.axisBottom().scale(xScale)
     .tickValues(xTickValues)
     .tickFormat((d, i) => xTickFormat[i]);
 
-  const yScale = d3.scaleLinear()
+  yScale = d3.scaleLinear()
     .domain([yMax, 1]).range([h - padding, padding]);
 
   const yAxis = d3.axisLeft().scale(yScale)
@@ -220,10 +220,15 @@ scale = () => {
     .attr('transform', 'translate(' + padding + ',0)')
     .call(yAxis);
 
-  appendData(filteredPieces, xScale, yScale)
+  if (flag) { appendData(filteredPieces); }
 }
 
-appendData = (filteredPieces, xScale, yScale) => {
+run = () => {
+  appendData(filteredPieces);
+  $('#modalStart')[0].style.display = 'none';
+}
+
+appendData = (filteredPieces) => {
   // append tooltip
   d3.select('body').append('div').attr('id', 'tooltip');
 
@@ -556,7 +561,7 @@ sliderVal = () => {
   d3.selectAll('circle').style('opacity', 0.1);
   d3.selectAll('.verticals').remove();
 
-  const xScale = d3.scaleLinear().domain([0, 10080]).range([padding, w - 15]);
+  xScale = d3.scaleLinear().domain([0, 10080]).range([padding, w - 15]);
 
   const ranges = [];
 
