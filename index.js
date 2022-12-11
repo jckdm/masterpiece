@@ -37,6 +37,8 @@ parseUploadedFile = () => {
       busiest = 0;
       total = 0;
       dayFreqCounts = {};
+      analyzed = false;
+      charted = false;
 
       Papa.parse(data, {
         header: true,
@@ -141,6 +143,24 @@ scale = (flag = false) => {
     yTickFormat.push(i.toString());
   }
 
+  let monthBars = $('#monthBar')[0].children;
+  if (monthBars.length > 0) {
+    for (bar of monthBars) {
+      if (bar.nodeName == 'rect') {
+        bar.attributes.fill.value = '#000000'
+      }
+    }
+  }
+
+  let dayBars = $('#dayBar')[0].children;
+  if (dayBars.length > 0) {
+    for (bar of dayBars) {
+      if (bar.nodeName == 'rect') {
+        bar.attributes.fill.value = '#000000'
+      }
+    }
+  }
+
   filteredPieces = [];
 
   if (daySelected == 'Week' && monthSelected == 'Year') {
@@ -168,6 +188,12 @@ scale = (flag = false) => {
         }
         filteredPieces.push(newPiece);
       }
+    }
+    if (monthSelected != 'Year' && charted == true) {
+      document.getElementById(monthSelected).attributes.fill.value = '#808080';
+    }
+    if (daySelected != 'Week' && charted == true) {
+      document.getElementById(daySelected).attributes.fill.value = '#808080';
     }
   }
 
@@ -290,9 +316,8 @@ appendData = (filteredPieces) => {
 }
 
 analyze = () => {
-  // TO DO: think of a new condition so you don't recalculate all this stuff
-  // each time you open the window. but make it work with uploading files
-  // if ($('#shortest')[0].innerHTML == '') {
+  if (analyzed == false) {
+    analyzed = true;
     let shortest = Number.MAX_VALUE;
     let longest = Number.MIN_VALUE;
 
@@ -338,55 +363,16 @@ analyze = () => {
     $('#total')[0].innerHTML = total;
 
     $('#active')[0].innerHTML = uniqueDays;
-  // }
+  }
 }
 
-barCharts = () => {
-  dayBars();
-  monthBars();
-  dayFreqBars();
-}
-
-dayBars = () => {
-  let bars = d3.select('#dayBar');
-
-  let x = d3.scaleBand()
-    .range([0, 300])
-    .domain(dayFreqs.map((d) => { return d.day; }))
-    .padding(0.25);
-
-  bars.append('g')
-    .call(d3.axisBottom(x))
-    .selectAll('text')
-    .attr("transform", "translate(-13,10)rotate(-90)")
-    .style("text-anchor", "end");
-
-  let y = d3.scaleLinear()
-    .range([150, 0])
-    .domain([0, 150]);
-
-  bars.append('g')
-    .call(d3.axisLeft(y));
-
-  bars.selectAll('bar')
-    .data(dayFreqs)
-    .enter()
-    .append('rect')
-    .attr('x', (d) => { return x(d.day); })
-    .attr('y', (d) => { return y(d.freq); })
-    .attr('width', x.bandwidth())
-    .attr('height', (d) => { return 150 - y(d.freq); })
-    .attr('fill', '#000000')
-
-  bars.selectAll('bar')
-    .data(dayFreqs)
-    .enter()
-    .append('text')
-    .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
-    .attr('class', 'barLabels')
-    .attr('y', (d) => { return y(d.freq) - 3; })
-    .attr('fill', '#000000')
-    .text((d) => { return d.freq; })
+charts = () => {
+  if (charted == false) {
+    dayBars();
+    monthBars();
+    freqPie();
+    charted = true;
+  }
 }
 
 monthBars = () => {
@@ -410,16 +396,23 @@ monthBars = () => {
   bars.append('g')
     .call(d3.axisLeft(y));
 
+  // bars
   bars.selectAll('bar')
     .data(monthFreqs)
     .enter()
     .append('rect')
+    .attr('id', (d) => { return d.month; })
     .attr('x', (d) => { return x(d.month); })
     .attr('y', (d) => { return y(d.freq); })
     .attr('width', x.bandwidth())
     .attr('height', (d) => { return 150 - y(d.freq); })
     .attr('fill', '#000000')
 
+  if (monthSelected != 'Year') {
+    document.getElementById(monthSelected).attributes.fill.value = '#808080';
+  }
+
+  // labels
   bars.selectAll('bar')
     .data(monthFreqs)
     .enter()
@@ -431,7 +424,56 @@ monthBars = () => {
     .text((d) => { return d.freq; })
 }
 
-dayFreqBars = () => {
+dayBars = () => {
+  let bars = d3.select('#dayBar');
+
+  let x = d3.scaleBand()
+    .range([0, 300])
+    .domain(dayFreqs.map((d) => { return d.day; }))
+    .padding(0.25);
+
+  bars.append('g')
+    .call(d3.axisBottom(x))
+    .selectAll('text')
+    .attr("transform", "translate(-13,10)rotate(-90)")
+    .style("text-anchor", "end");
+
+  let y = d3.scaleLinear()
+    .range([150, 0])
+    .domain([0, 150]);
+
+  bars.append('g')
+    .call(d3.axisLeft(y));
+
+  // bars
+  bars.selectAll('bar')
+    .data(dayFreqs)
+    .enter()
+    .append('rect')
+    .attr('id', (d) => { return d.day; })
+    .attr('x', (d) => { return x(d.day); })
+    .attr('y', (d) => { return y(d.freq); })
+    .attr('width', x.bandwidth())
+    .attr('height', (d) => { return 150 - y(d.freq); })
+    .attr('fill', '#000000')
+
+  if (daySelected != 'Week') {
+    document.getElementById(daySelected).attributes.fill.value = '#808080';
+  }
+
+  // labels
+  bars.selectAll('bar')
+    .data(dayFreqs)
+    .enter()
+    .append('text')
+    .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
+    .attr('class', 'barLabels')
+    .attr('y', (d) => { return y(d.freq) - 3; })
+    .attr('fill', '#000000')
+    .text((d) => { return d.freq; })
+}
+
+freqPie = () => {
   document.getElementById('pieKey').innerHTML = '<tr><td class="und">freq</td><td class="und">num</td><td class="und">pct</td></tr>';
 
   // set the color scale

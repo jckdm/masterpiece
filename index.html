@@ -9,22 +9,12 @@
     <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
     <script type="text/javascript" src="papaparse.min.js"></script>
     <script type="text/javascript" src="static.js"></script>
-    <script type="text/javascript" src="viz.js"></script>
-    <script type="text/javascript" src="main.js"></script>
-    <link rel="stylesheet" type="text/css" href="viz.css">
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="parse.js"></script>
+    <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
     <form>
-      <select id="day" onchange="scale(true);">
-        <option value="Week" selected>Week</option>
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
-        <option value="Sunday">Sunday</option>
-      </select>
       <select id="month" onchange="scale(true);">
         <option value="Year" selected>Year</option>
         <option value="January">January</option>
@@ -39,6 +29,16 @@
         <option value="October">October</option>
         <option value="November">November</option>
         <option value="December">December</option>
+      </select>
+      <select id="day" onchange="scale(true);">
+        <option value="Week" selected>Week</option>
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
       </select>
       <button onclick="analyze(); $('#modal')[0].style.display = 'block'; return false;" id="open">Analyze</button>
       <div id="modal">
@@ -62,15 +62,15 @@
            </table>
         </div>
       </div>
-      <button onclick="barCharts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">Charts</button>
+      <button onclick="charts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">Charts</button>
       <div id="modalBar">
         <div id="modalBarGraphs" class="modal-content-graphs">
           <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
           <div id="charts">
-          <label class="label" id="labelMonthBar" for="monthBar">Instances Per Month</label><br>
+          <label class="label" id="labelMonthBar" for="monthBar">Instances Per Month *</label><br>
           <svg id="monthBar"></svg>
           <br><br>
-          <label class="label" id="labelDayBar" for="dayBar">Instances Per Day of Week</label><br>
+          <label class="label" id="labelDayBar" for="dayBar">Instances Per Day of Week *</label><br>
           <svg id="dayBar"></svg>
           <br><br>
             <label class="label" id="labelPie" for="pieBox">Frequency Per Day, as Percentages of the Year</label><br>

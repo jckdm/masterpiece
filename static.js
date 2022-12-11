@@ -17,6 +17,8 @@ let busyDays = '';
 let busiest = 0;
 let total = 0;
 let dayFreqCounts = {};
+let analyzed = false;
+let charted = false;
 
 // irrelevant
 let lineTotal = 0;
