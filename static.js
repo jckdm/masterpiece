@@ -20,12 +20,6 @@ let dayFreqCounts = {};
 let analyzed = false;
 let charted = false;
 
-// irrelevant
-let lineTotal = 0;
-const linePieces = [];
-const lw = 10000;
-const lh = 725;
-
 const months = {
   "January": 0,
   "February": 1,
@@ -43,6 +37,8 @@ const months = {
 
 const monthMarks = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 const monthLengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+const daysForVerticals = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const days = {
   "Monday": 0,
@@ -66,5 +62,5 @@ const colors = {
   "September": '#f9eeae',
   "October": '#b599c1',
   "November": '#84c4b4',
-  "December": '#f5be6b'
+  "December": '#f5c47B'
 }

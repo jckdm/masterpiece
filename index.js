@@ -541,6 +541,66 @@ freqPie = () => {
   }
 }
 
+blanks = () => {
+  document.getElementById('verticalBlanks').innerHTML = '';
+  const val = parseInt(document.getElementById('blank').value);
+  document.getElementById('labelBlank').innerHTML = `${val}%`;
+
+  const blankKeys = {};
+  for (piece of pieces) { blankKeys[piece.x] = piece.x; }
+  const blanks = Object.values(blankKeys).sort((a, b) => { return a - b; });
+  const numBlankKeys = blanks.length;
+
+  let blankSpans = [];
+  let longestBlank = 0;
+
+  for (let i = 0; i < numBlankKeys - 1; i++) {
+    let blankGap = blanks[i + 1] - blanks[i];
+    blankSpans.push(blankGap);
+    if (blankGap > longestBlank) { longestBlank = blankGap; }
+  }
+
+  const lastBlankGap = blanks[0] + (10080 - blanks[numBlankKeys - 1]);
+  blankSpans.push(lastBlankGap);
+  if (lastBlankGap > longestBlank) { longestBlank = blankGap; }
+
+  blankSpans = blankSpans.filter((item, index) => blankSpans.indexOf(item) === index);
+  blankSpans.sort((a, b) => { return a - b; });
+
+  const threshold = blankSpans[Math.floor((val / 100) * blankSpans.length) - 1];
+
+  let longestSpans = [];
+
+  for (let i = 0; i < numBlankKeys; i++) {
+    let blankGap = blanks[i + 1] - blanks[i];
+    if (blankGap >= threshold) { longestSpans.push([blanks[i], blanks[i + 1]]); }
+  }
+
+  for (span of longestSpans) {
+    let startDay = daysForVerticals[Math.floor((span[0] / 60) / 24)];
+    let endDay = daysForVerticals[Math.floor((span[1] / 60) / 24)]
+
+    let num24sStart = Math.floor((span[0] / 60) / 24) * 24;
+    let num24sEnd = Math.floor((span[1] / 60) / 24) * 24;
+
+    let startHours = Math.floor(span[0] / 60) - num24sStart;
+    let endHours = Math.floor(span[1] / 60) - num24sEnd;
+
+    let startMinutes = span[0] - (60 * startHours) - (num24sStart * 60);
+    let endMinutes = span[1] - (60 * endHours) - (num24sEnd * 60);
+
+    const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
+    const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
+    const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
+    const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
+
+    let p = document.createElement('p');
+    p.innerText = `${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
+    document.getElementById('verticalBlanks').appendChild(p);
+  }
+
+}
+
 sliderVal = () => {
   document.getElementById('verticalSpans').innerHTML = '';
   const val = parseInt(document.getElementById('vmins').value);
@@ -615,7 +675,7 @@ sliderVal = () => {
         if (p.x < minX) { minX = p.x; }
         if (p.x > maxX) { maxX = p.x; }
       }
-      // still needed: there could be incorrectly-sized ranges with the max as well
+      // still necessary: there could be incorrectly-sized ranges with the max as well
       if (maxX - minX == val) { ranges.push([minX, maxX, vals[v].length]); }
       else { delete vals[v]; }
     }
@@ -637,8 +697,6 @@ sliderVal = () => {
       .attr('class', 'verticals')
       .style('fill', 'white')
       .style('opacity', 0.1);
-
-    const daysForVerticals = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     ranges.sort((a, b) => a[0] - b[0]);
 

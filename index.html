@@ -67,10 +67,10 @@
         <div id="modalBarGraphs" class="modal-content-graphs">
           <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
           <div id="charts">
-          <label class="label" id="labelMonthBar" for="monthBar">Instances Per Month *</label><br>
+          <label class="label" id="labelMonthBar" for="monthBar">Instances Per Month</label><br>
           <svg id="monthBar"></svg>
           <br><br>
-          <label class="label" id="labelDayBar" for="dayBar">Instances Per Day of Week *</label><br>
+          <label class="label" id="labelDayBar" for="dayBar">Instances Per Day of Week</label><br>
           <svg id="dayBar"></svg>
           <br><br>
             <label class="label" id="labelPie" for="pieBox">Frequency Per Day, as Percentages of the Year</label><br>
@@ -85,15 +85,28 @@
       <div id="modalVerticals">
         <div class="modal-content">
            <button onclick="$('#modalVerticals')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
-           <text>Use this slider to adjust the size of range with which to filter the data. The algorithm uses this size to identify range(s) that contain the highest frequency of data relative to other equally-sized ranges. Ties are unbroken.</text><br><br>
-           <input oninput="sliderVal();" id="vmins" type="range" value="60" step="5" min="0" max="120"><br>
-           <label id="labelvmins" for="vmins">60 minutes</label><br><br>
-           <div id="verticalSpans"></div>
-           <button class="clear" onclick="clearVerticals(); return false;">Clear</button>
+           <table>
+             <tr><th>Busiest Ranges</th><th>Longest Gaps</th></tr>
+             <tr>
+               <td>
+               <text>This algorithm uses the chosen length to identify range(s) that contain the highest frequency of data relative to other equally-sized ranges. Ties are unbroken.</text><br><br>
+               <input oninput="sliderVal();" id="vmins" type="range" value="60" step="5" min="0" max="120"><br>
+               <label id="labelvmins" for="vmins">60 minutes</label><br><br>
+               <div id="verticalSpans"></div>
+               <center><button class="clear" onclick="clearVerticals(); return false;">Clear</button></center>
+             </td>
+             <td>
+               <text>This algorithm uses the chosen threshold to identify range(s) that contain no data and are larger than other range(s) that contain no data.</text><br><br>
+               <input oninput="blanks();" id="blank" type="range" value="75" step="5" min="75" max="100"><br>
+               <label id="labelBlank" for="blank">75%</label><br><br>
+               <div id="verticalBlanks"></div>
+               <center><button class="clear" onclick="clearBlanks(); return false;">Clear</button></center>
+             </td>
+           </tr>
+         </table>
         </div>
       </div>
       </form>
-
       <div id="modalStart">
         <div class="modal-content">
           <center>
@@ -108,7 +121,6 @@
           </center>
         </div>
       </div>
-
       <form class="form-right">
         <button onclick="$('#modalInfo')[0].style.display = 'block'; return false;" id="open">?</button>
         <div id="modalInfo">
