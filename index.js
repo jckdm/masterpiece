@@ -576,29 +576,49 @@ blanks = () => {
     if (blankGap >= threshold) { longestSpans.push([blanks[i], blanks[i + 1]]); }
   }
 
-  for (span of longestSpans) {
-    let startDay = daysForVerticals[Math.floor((span[0] / 60) / 24)];
-    let endDay = daysForVerticals[Math.floor((span[1] / 60) / 24)]
+  d3.selectAll('.blanks').remove();
 
-    let num24sStart = Math.floor((span[0] / 60) / 24) * 24;
-    let num24sEnd = Math.floor((span[1] / 60) / 24) * 24;
+  if (longestSpans.length > 0) {
+    // more slop
+    d3.select('.gridH')
+      .selectAll('rect')
+      .data(longestSpans)
+      .enter()
+      .append('rect')
+      .attr('x', (d) => xScale(d[0]) + 5)
+      .attr('y', padding)
+      .attr('height', h - padding - padding)
+      .attr('width', (d) => xScale(d[1]) - xScale(d[0]) - 10)
+      .attr('class', 'blanks')
+      .style('fill', 'white')
+      .style('opacity', 0.1);
 
-    let startHours = Math.floor(span[0] / 60) - num24sStart;
-    let endHours = Math.floor(span[1] / 60) - num24sEnd;
+    // necessary?
+    longestSpans.sort((a, b) => a[0] - b[0]);
 
-    let startMinutes = span[0] - (60 * startHours) - (num24sStart * 60);
-    let endMinutes = span[1] - (60 * endHours) - (num24sEnd * 60);
+    for (span of longestSpans) {
+      let startDay = daysForVerticals[Math.floor((span[0] / 60) / 24)];
+      let endDay = daysForVerticals[Math.floor((span[1] / 60) / 24)]
 
-    const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
-    const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
-    const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
-    const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
+      let num24sStart = Math.floor((span[0] / 60) / 24) * 24;
+      let num24sEnd = Math.floor((span[1] / 60) / 24) * 24;
 
-    let p = document.createElement('p');
-    p.innerText = `${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
-    document.getElementById('verticalBlanks').appendChild(p);
+      let startHours = Math.floor(span[0] / 60) - num24sStart;
+      let endHours = Math.floor(span[1] / 60) - num24sEnd;
+
+      let startMinutes = span[0] - (60 * startHours) - (num24sStart * 60);
+      let endMinutes = span[1] - (60 * endHours) - (num24sEnd * 60);
+
+      const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
+      const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
+      const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
+      const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
+
+      let p = document.createElement('p');
+      p.innerText = `${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
+      document.getElementById('verticalBlanks').appendChild(p);
+    }
   }
-
 }
 
 sliderVal = () => {
@@ -663,6 +683,7 @@ sliderVal = () => {
   d3.selectAll('circle').style('opacity', 0.1);
   d3.selectAll('.verticals').remove();
 
+  // TO DO: should be defined somewhere else?
   xScale = d3.scaleLinear().domain([0, 10080]).range([padding, w - 15]);
 
   const ranges = [];
