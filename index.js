@@ -147,7 +147,7 @@ scale = (flag = false) => {
   if (monthBars.length > 0) {
     for (bar of monthBars) {
       if (bar.nodeName == 'rect') {
-        bar.attributes.fill.value = '#000000'
+        bar.attributes.fill.value = '#FFFFFF'
       }
     }
   }
@@ -156,7 +156,7 @@ scale = (flag = false) => {
   if (dayBars.length > 0) {
     for (bar of dayBars) {
       if (bar.nodeName == 'rect') {
-        bar.attributes.fill.value = '#000000'
+        bar.attributes.fill.value = '#FFFFFF'
       }
     }
   }
@@ -165,6 +165,12 @@ scale = (flag = false) => {
 
   if (daySelected == 'Week' && monthSelected == 'Year') {
     filteredPieces = JSON.parse(JSON.stringify(pieces));
+
+    const clearBtns = document.getElementsByClassName('clear');
+    clearBtns[0].disabled = false;
+    clearBtns[1].disabled = false;
+    document.getElementById('vmins').disabled = false;
+    document.getElementById('blank').disabled = false;
   }
   if (daySelected == 'Week') {
     xMax = 10080;
@@ -177,6 +183,13 @@ scale = (flag = false) => {
     yTickFormat = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'NYE'];
   }
   if (daySelected != 'Week' || monthSelected != 'Year') {
+
+    const clearBtns = document.getElementsByClassName('clear');
+    clearBtns[0].disabled = true;
+    clearBtns[1].disabled = true;
+    document.getElementById('vmins').disabled = true;
+    document.getElementById('blank').disabled = true;
+
     for (piece of pieces) {
       if ((piece.day == daySelected || daySelected == 'Week') && (piece.month == monthSelected || monthSelected == 'Year')) {
         let newPiece = JSON.parse(JSON.stringify(piece));
@@ -246,7 +259,7 @@ scale = (flag = false) => {
     .attr('transform', 'translate(' + padding + ',0)')
     .call(yAxis);
 
-  if (flag) { appendData(filteredPieces); }
+  if (flag) { appendData(filteredPieces, flag); }
 }
 
 run = () => {
@@ -254,7 +267,7 @@ run = () => {
   $('#modalStart')[0].style.display = 'none';
 }
 
-appendData = (filteredPieces) => {
+appendData = (filteredPieces, flag = false) => {
   // append tooltip
   d3.select('body').append('div').attr('id', 'tooltip');
 
@@ -290,13 +303,11 @@ appendData = (filteredPieces) => {
           d3.select('#tooltip').style('visibility', 'hidden')
      })
 
-     for (obj of objs) {
-       let c = obj.count;
-       if (c in dayFreqCounts) {
-         dayFreqCounts[c] += 1;
-       }
-       else {
-         dayFreqCounts[c] = 1;
+     if (!flag) {
+       for (obj of objs) {
+         let c = obj.count;
+         if (c in dayFreqCounts) { dayFreqCounts[c] += 1; }
+         else { dayFreqCounts[c] = 1; }
        }
      }
 
@@ -310,9 +321,7 @@ appendData = (filteredPieces) => {
 
       dayFreqCounts[0] = day - uniqueDays;
      }
-     else {
-       dayFreqCounts[0] = 365 - uniqueDays;
-     }
+     else { dayFreqCounts[0] = 365 - uniqueDays; }
 }
 
 analyze = () => {
@@ -390,8 +399,8 @@ monthBars = () => {
     .style("text-anchor", "end");
 
   let y = d3.scaleLinear()
-    .range([150, 0])
-    .domain([0, 150]);
+    .range([130, 0])
+    .domain([0, 130]);
 
   bars.append('g')
     .call(d3.axisLeft(y));
@@ -406,7 +415,7 @@ monthBars = () => {
     .attr('y', (d) => { return y(d.freq); })
     .attr('width', x.bandwidth())
     .attr('height', (d) => { return 150 - y(d.freq); })
-    .attr('fill', '#000000')
+    .attr('fill', '#FFFFFF')
 
   if (monthSelected != 'Year') {
     document.getElementById(monthSelected).attributes.fill.value = '#808080';
@@ -420,7 +429,7 @@ monthBars = () => {
     .attr('x', (d) => { return x(d.month) + (x.bandwidth() / 6); })
     .attr('class', 'barLabels')
     .attr('y', (d) => { return y(d.freq) - 3; })
-    .attr('fill', '#000000')
+    .attr('fill', '#FFFFFF')
     .text((d) => { return d.freq; })
 }
 
@@ -439,8 +448,8 @@ dayBars = () => {
     .style("text-anchor", "end");
 
   let y = d3.scaleLinear()
-    .range([150, 0])
-    .domain([0, 150]);
+    .range([160, 0])
+    .domain([0, 160]);
 
   bars.append('g')
     .call(d3.axisLeft(y));
@@ -455,7 +464,7 @@ dayBars = () => {
     .attr('y', (d) => { return y(d.freq); })
     .attr('width', x.bandwidth())
     .attr('height', (d) => { return 150 - y(d.freq); })
-    .attr('fill', '#000000')
+    .attr('fill', '#FFFFFF')
 
   if (daySelected != 'Week') {
     document.getElementById(daySelected).attributes.fill.value = '#808080';
@@ -469,7 +478,7 @@ dayBars = () => {
     .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
     .attr('class', 'barLabels')
     .attr('y', (d) => { return y(d.freq) - 3; })
-    .attr('fill', '#000000')
+    .attr('fill', '#FFFFFF')
     .text((d) => { return d.freq; })
 }
 
@@ -544,7 +553,7 @@ freqPie = () => {
 blanks = () => {
   document.getElementById('verticalBlanks').innerHTML = '';
   const val = parseInt(document.getElementById('blank').value);
-  document.getElementById('labelBlank').innerHTML = `${val}%`;
+  document.getElementById('labelBlank').innerHTML = `>= ${val}th pctl.`;
 
   const blankKeys = {};
   for (piece of pieces) { blankKeys[piece.x] = piece.x; }
@@ -590,11 +599,8 @@ blanks = () => {
       .attr('height', h - padding - padding)
       .attr('width', (d) => xScale(d[1]) - xScale(d[0]) - 10)
       .attr('class', 'blanks')
-      .style('fill', 'white')
+      .style('fill', '#008AD8')
       .style('opacity', 0.1);
-
-    // necessary?
-    longestSpans.sort((a, b) => a[0] - b[0]);
 
     for (span of longestSpans) {
       let startDay = daysForVerticals[Math.floor((span[0] / 60) / 24)];
@@ -680,7 +686,7 @@ sliderVal = () => {
     }
   }
 
-  d3.selectAll('circle').style('opacity', 0.1);
+  d3.selectAll('circle').style('opacity', 0.25);
   d3.selectAll('.verticals').remove();
 
   // TO DO: should be defined somewhere else?
@@ -755,5 +761,10 @@ sliderVal = () => {
 clearVerticals = () => {
   d3.selectAll('circle').style('opacity', 1.0);
   d3.selectAll('.verticals').remove();
+  $('#modalVerticals')[0].style.display = 'none';
+}
+
+clearBlanks = () => {
+  d3.selectAll('.blanks').remove();
   $('#modalVerticals')[0].style.display = 'none';
 }

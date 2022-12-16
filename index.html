@@ -1,5 +1,3 @@
-<!-- what's the relationship btw my coding this over the course of the year and creating the data over that same time? -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,16 +48,16 @@
              <th>Overall</th>
              <th>Gaps</th>
              <tr>
-               <td>Total count: <span id="total"></span></td>
-               <td>Shortest gap: <span id="shortest"></span></td>
+               <td class="analysis">Total count: <span id="total"></span></td>
+               <td class="analysis">Shortest gap: <span id="shortest"></span></td>
              </tr>
              <tr>
-               <td>Active days: <span id="active"></span></td>
-               <td>Median gap: <span id="median"></span></td>
+               <td class="analysis">Active days: <span id="active"></span></td>
+               <td class="analysis">Median gap: <span id="median"></span></td>
              </tr>
              <tr>
-               <td>Busiest day(s): <span id="busiest"></span></td>
-               <td>Longest gap: <span id="longest"></span></td>
+               <td class="analysis">Busiest day(s): <span id="busiest"></span></td>
+               <td class="analysis">Longest gap: <span id="longest"></span></td>
              </tr>
            </table>
         </div>
@@ -88,21 +86,36 @@
         <div class="modal-content">
            <button onclick="$('#modalVerticals')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
            <table>
-             <tr><th>Busiest Ranges</th><th>Longest Gaps</th></tr>
              <tr>
-               <td>
-               <text>This algorithm uses the chosen length to identify range(s) that contain the highest frequency of data relative to other equally-sized ranges. Ties are unbroken.</text><br><br>
-               <input oninput="sliderVal();" id="vmins" type="range" value="60" step="5" min="0" max="120"><br>
-               <label id="labelvmins" for="vmins">60 minutes</label><br><br>
-               <div id="verticalSpans"></div>
-               <center><button class="clear" onclick="clearVerticals(); return false;">Clear</button></center>
-             </td>
-             <td>
-               <text>This algorithm uses the chosen threshold to identify range(s) that contain no data and are larger than other range(s) that contain no data.</text><br><br>
-               <input oninput="blanks();" id="blank" type="range" value="75" step="5" min="75" max="100"><br>
-               <label id="labelBlank" for="blank">75%</label><br><br>
-               <div id="verticalBlanks"></div>
-               <center><button class="clear" onclick="clearBlanks(); return false;">Clear</button></center>
+               <th>Busiest Ranges</th>
+               <th>Longest Gaps</th>
+             </tr>
+             <tr>
+               <td class="verts">
+                 <svg width="25" height="100%" class="vertEx">
+                   <rect width="25" height="100%" style="fill:#FFFFFF; opacity:0.1"/>
+                 </svg>
+                 <text>This algorithm uses the chosen length to identify range(s) that contain the highest frequency of data relative to other equally-sized ranges. Ties are unbroken.</text><br><br>
+                 <div class="slide">
+                   <input oninput="sliderVal();" id="vmins" type="range" value="60" step="5" min="0" max="120"><br>
+                   <label id="labelvmins" for="vmins">60 minutes</label>
+                 </div>
+                 <br><br>
+                 <div id="verticalSpans"></div>
+                 <center><button class="clear" onclick="clearVerticals(); return false;">Clear Ranges</button></center>
+              </td>
+              <td class="verts">
+                <svg width="25" height="100%" class="vertEx">
+                  <rect width="25" height="100%" style="fill:#008AD8; opacity:0.1"/>
+                </svg>
+                 <text>This algorithm uses the chosen threshold to identify range(s) that contain no data and are larger than other range(s) that contain no data.</text><br><br>
+                 <div class="slide">
+                   <input disabled="disabled" oninput="blanks();" id="blank" type="range" value="75" step="5" min="75" max="100"><br>
+                   <label id="labelBlank" for="blank">>= 75th pctl.</label>
+                 </div>
+                 <br><br>
+                 <div id="verticalBlanks"></div>
+                 <center><button class="clear" onclick="clearBlanks(); return false;">Clear Gaps</button></center>
              </td>
            </tr>
          </table>
@@ -112,12 +125,12 @@
       <div id="modalStart">
         <div class="modal-content">
           <center>
-          <h1><i>Masterpiece</i> is a visualization and analysis tool that identifies patterns in self-reported data about a user's habits.</h1>
+          <h1><i>Masterpiece</i> is a visualization and analysis tool that identifies patterns in data of a user's habits.</h1>
           <h3>Inspired by the idea of a New Year's Resolution, <i>Masterpiece</i> considers data within the window of one year, and frames it within the cycle of a week, allowing users to understand their habits in relation to time at large.</h3>
           <br>
-          <text>Explore a variety of filters, statistics, graphs, and methods of anaylsis. I hope you're horrified by what you discover.</text>
+          <text>Explore a variety of filters, statistics, graphs, and methods of anaylsis. I hope you're horrified by what you discover!</text>
           <br><br>
-          <button onclick="run(); return false;" id="run">Run Sample Data File</button>
+          <button onclick="run(); return false;" id="run">Process Sample Data</button>
           <br><br>
           <text>Or, you can upload your own data file. Your data will not be stored.</text>
           </center>
@@ -128,7 +141,9 @@
         <div id="modalInfo">
           <div class="modal-content">
             <button onclick="$('#modalInfo')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
-            <text><i>Masterpiece</i> is also an experiment in recognizing the bias that is implicitly packaged together with self-recorded data. This bias is created in a self-fulfilling prophecy that is inextricable from manual data entry: as time progresses and data is recorded, an individual becomes accustomed to, self-aware of, and eventually hyper-aware of the habit they are tracking. The effect is almost Pavlovian as the feeling of performing a habit becomes a necessary precursor to the feeling of recording that habit as data. By extension, it is not unreasonable to think that the order of events might flip: could an individual perform a habit for the pleasure of recording it? Might an individual avoid performing a habit in order to modify the data to their liking? Perhaps it is inevitable that as we become closer with our data, we become farther from ourselves.</text>
+            <text><i>Masterpiece</i> is also an experiment in recognizing the bias that is implicitly packaged together with self-reporded data. This bias is created in a self-fulfilling prophecy that is inextricable from manual data entry: as time progresses and data is recorded, an individual becomes accustomed to, self-aware of, and eventually hyper-aware of the habit they are tracking. And what is the relationship between my simultaneous creation of the tool, and the data that feeds it?</text>
+            <br><br>
+            <text>The effect is almost Pavlovian as the feeling of performing a habit becomes a necessary precursor to the feeling of recording that habit as data. By extension, it is not unreasonable to think that the order of events might flip: could an individual perform a habit for the pleasure of recording it? Might an individual avoid performing a habit in order to modify the data to their liking? Perhaps it is inevitable that as we become closer with our data, we become farther from ourselves.</text>
             <br><br>
             <text>Is data any more honest, then, when it is automated? Automation can be inaccurate, but is it any worse than the effects of our human biases? One year into this experiment, I find myself stuck with (what I hope is a false) binary: imperfect (and human-designed) automation, or increasingly biased self-reported data. There may not be a Goldilocks option, and I'm beginning to think that it may be impossible to collect unbiased data about the self when the very act of recording data is a form of passive data analysis.</text>
             <br><br>

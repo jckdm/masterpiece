@@ -3,7 +3,7 @@ body {
   font-family: monospace;
 }
 
-a, a:visited { color: blue; }
+a, a:visited { color: #008AD8; }
 
 form { position: fixed; }
 
@@ -41,10 +41,11 @@ form { position: fixed; }
   height: 100%;
   overflow: auto;
   padding-top: calc(25px + 5vh);
+  background-color: #80808012;
 }
 
 .modal-content, .modal-content-graphs {
-  background-color: #F5F5F5;
+  background-color: #333333;
   margin: auto;
   padding: calc(12px + 0.35vw + 0.35vh);
   width: 67.5%;
@@ -53,14 +54,18 @@ form { position: fixed; }
   border: calc(0.15vw + 0.15vh) solid #000000;
   font-size: calc(8px + 0.75vw);
   text-align: left;
-  color: #333333;
+  color: #F5F5F5;
 }
 
-.modal-content-graphs { text-align: center; }
+.modal-content-graphs, .slide { text-align: center; }
 
-#modalStart {
-  display: block;
-  background-color: #8080804D;
+#modalStart { display: block; }
+
+#vmins, #blank { width: 75%; }
+
+.vertEx {
+  float: left;
+  padding-right: 10px;
 }
 
 #charts {
@@ -86,9 +91,13 @@ form { position: fixed; }
   color: #000000;
 }
 
-td {
+.analysis {
   padding-right: 50px;
   padding-bottom: 10px;
+}
+
+.verts {
+  padding-right: 25px;
 }
 
 #pieBox {
