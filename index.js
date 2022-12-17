@@ -300,20 +300,24 @@ appendData = (filteredPieces, flag = false) => {
 
        d3.select('#tooltip')
           .style('visibility', 'visible')
-          .style('left', event.pageX - 100 + 'px')
-          .style('top', event.pageY - 100 + 'px')
+          .style('left', () => {
+            if (d.x < 175) { return (event.pageX + 25 + 'px'); }
+            else { return (event.pageX - 100 + 'px'); }
+          })
+          .style('top', () => {
+            if (d.y < 150) { return (event.pageY + 25 + 'px'); }
+            else { return (event.pageY - 100 + 'px'); }
+          })
 
       const dt = (d.target.__data__);
 
       const hour = dt.hour.toString().length == 1 ? '0'.concat(dt.hour) : dt.hour;
       const minute = dt.minute.toString().length == 1 ? '0'.concat(dt.minute) : dt.minute;
 
-      $('#date').html(`<text>${dt.day}, ${dt.month} ${dt.date}, ${hour}:${minute}</text>`);
+      $('#date').html(`<text>${dt.day}</text><br><text>${dt.month} ${dt.date}</text><br><text>${hour}:${minute}</text>`);
 
      })
-     .on('mouseout', () => {
-          d3.select('#tooltip').style('visibility', 'hidden')
-     })
+     .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') })
 
      if (!flag) {
        for (obj of objs) {
@@ -327,11 +331,11 @@ appendData = (filteredPieces, flag = false) => {
      let eoy = new Date(2023, 0, 1);
 
      if (today < eoy) {
-      const start = new Date(2022, 0, 0);
-      const diff = today - start;
-      const day = Math.floor(diff / 86400000);
+       const start = new Date(2022, 0, 0);
+       const diff = today - start;
+       const day = Math.floor(diff / 86400000);
 
-      dayFreqCounts[0] = day - uniqueDays;
+       dayFreqCounts[0] = day - uniqueDays;
      }
      else { dayFreqCounts[0] = 365 - uniqueDays; }
 }

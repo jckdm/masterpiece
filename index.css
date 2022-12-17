@@ -18,8 +18,9 @@ form { position: fixed; }
   visibility: hidden;
   background-color: #999999;
   padding: 5px 10px 5px 10px;
-  border: 1px white;
-  width: calc(200px + 1vw);
+  border: 1px white solid;
+  width: 75px;
+  text-align: center;
 }
 
 .form-right {
