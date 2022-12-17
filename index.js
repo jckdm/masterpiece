@@ -39,6 +39,7 @@ parseUploadedFile = () => {
       dayFreqCounts = {};
       analyzed = false;
       charted = false;
+      colored = true;
 
       Papa.parse(data, {
         header: true,
@@ -55,6 +56,17 @@ parseUploadedFile = () => {
       })
     }
   });
+}
+
+toggleColor = () => {
+  if (colored) { d3.selectAll('circle').style('fill', '#FFFFFF'); }
+  else {
+    const circles = d3.selectAll('circle')._groups[0];
+    for (circle of circles) {
+      circle.attributes.style.value = colors[circle.__data__.month];
+    }
+  }
+  colored = !colored;
 }
 
 parseRow = (row) => {

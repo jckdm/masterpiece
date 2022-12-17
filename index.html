@@ -40,12 +40,12 @@
         <option value="Saturday">Saturday</option>
         <option value="Sunday">Sunday</option>
       </select>
-      <button onclick="analyze(); $('#modal')[0].style.display = 'block'; return false;" id="open">Analyze</button>
+      <button onclick="analyze(); $('#modal')[0].style.display = 'block'; return false;" id="open">&#9736;&#xFE0E; count</button>
       <div id="modal">
         <div class="modal-content">
            <button onclick="$('#modal')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
            <table>
-             <th>Overall</th>
+             <th>Counts</th>
              <th>Gaps</th>
              <tr>
                <td class="analysis">Total count: <span id="total"></span></td>
@@ -62,7 +62,7 @@
            </table>
         </div>
       </div>
-      <button onclick="charts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">Charts</button>
+      <button onclick="charts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">&#9737;&#xFE0E; visualize</button>
       <div id="modalBar">
         <div id="modalBarGraphs" class="modal-content-graphs">
           <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
@@ -81,7 +81,7 @@
          </div>
         </div>
       </div>
-      <button onclick="$('#modalVerticals')[0].style.display = 'block'; return false;" id="open">Verticals</button>
+      <button onclick="$('#modalVerticals')[0].style.display = 'block'; return false;" id="open">&#9761;&#xFE0E; analyze</button>
       <div id="modalVerticals">
         <div class="modal-content">
            <button onclick="$('#modalVerticals')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
@@ -121,6 +121,7 @@
          </table>
         </div>
       </div>
+      <button onclick="toggleColor(); return false;">&#9775;&#xFE0E; color</button>
       </form>
       <div id="modalStart">
         <div class="modal-content">
@@ -132,12 +133,12 @@
           <br><br>
           <button onclick="run(); return false;" id="run">Process Sample Data</button>
           <br><br>
-          <text>Or, you can upload your own data file. Your data will not be stored.</text>
+          <text>Or, you can upload your own file. Your data will not be stored.</text>
           </center>
         </div>
       </div>
       <form class="form-right">
-        <button onclick="$('#modalInfo')[0].style.display = 'block'; return false;" id="open">?</button>
+        <button onclick="$('#modalInfo')[0].style.display = 'block'; return false;" id="open">&#8258;&#xFE0E; thoughts</button>
         <div id="modalInfo">
           <div class="modal-content">
             <button onclick="$('#modalInfo')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
@@ -151,12 +152,13 @@
             <text>And on <a href="https://github.com/jckdm/masterpiece" target="_blank">GitHub</a>...</text>
           </div>
         </div>
-        <button onclick="$('#modalUpload')[0].style.display = 'block'; return false;" id="open">Upload Data File</button>
+        <button onclick="$('#modalUpload')[0].style.display = 'block'; return false;" id="open">&#8673;&#xFE0E; data</button>
         <div id="modalUpload">
           <div class="modal-content">
             <button onclick="$('#modalUpload')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
-             <text>Upload a .csv file with headers:</text><br>
-             <text>Month,Day,Date,Hour,Minute</text><br><br>
+             <text>Upload a .csv file with headers:</text><br><br>
+             <text>Month,Day,Date,Hour,Minute</text><br>
+             <text>View <a href="https://github.com/jckdm/masterpiece/blob/main/data.csv" target="_blank">sample data file</a></text><br><br>
              <div id="fileUploader">
                <input id="uploadedFile" type="file"></input>
              </div>

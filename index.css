@@ -3,6 +3,8 @@ body {
   font-family: monospace;
 }
 
+select, button { height: 25px; }
+
 a, a:visited { color: #008AD8; }
 
 form { position: fixed; }
@@ -76,8 +78,9 @@ form { position: fixed; }
 
 .close {
   float: right;
-  font-size: calc(8px + 1.5vw + 1.5vh);
+  font-size: calc(12px + 2.5vh);
   color: #000000;
+  height: calc(40px + 1.5vh);
 }
 
 .close:hover, .clear:hover {
