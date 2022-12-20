@@ -30,7 +30,7 @@ form { position: fixed; }
 
 #uploadError { color: red; }
 
-.barLabels, .barNums, .pieLabels, #pieKey, .label { font-size: 10px; }
+.barLabels, .barNums, .pieLabels, #pieKey, .label, .subhead { font-size: 10px; }
 
 #modal, #modalBar, #modalVerticals, #modalUpload, #modalInfo, #modalStart {
   display: none;

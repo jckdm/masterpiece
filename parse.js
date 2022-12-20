@@ -5,10 +5,7 @@ Papa.parse('data.csv', {
   skipEmptyLines: true,
   step: (row) => parseRow(row),
   complete: () => {
-    d3.select('body').append('svg')
-      .attr('id', 'main')
-      .attr('width', w)
-      .attr('height', h);
+    d3.select('body').append('svg').attr('id', 'main').attr('width', w).attr('height', h);
     scale(false);
   }
 });

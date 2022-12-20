@@ -71,7 +71,7 @@ toggleColor = () => {
 
 parseRow = (row) => {
   const r = row.data;
-  const x = (days[r.Day] * 1440) + (r.Hour * 60) + r.Minute;
+  const x = (days[r.Day] * SMALLX) + (r.Hour * 60) + r.Minute;
   const y = monthMarks[months[r.Month]] + r.Date;
 
   pieces.push({
@@ -142,7 +142,7 @@ scale = (flag = false) => {
   daySelected = $('#day')[0].value;
   monthSelected = $('#month')[0].value;
 
-  let xMax = 1440;
+  let xMax = SMALLX;
   let xTickValues = [0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1439];
   let xTickFormat = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '23:59'];
 
@@ -185,7 +185,7 @@ scale = (flag = false) => {
     document.getElementById('blank').disabled = false;
   }
   if (daySelected == 'Week') {
-    xMax = 10080;
+    xMax = BIGX;
     xTickValues = [0, 1440, 2880, 4320, 5760, 7200, 8640, 10080];
     xTickFormat = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'NWE'];
   }
@@ -382,11 +382,8 @@ analyze = () => {
     const medianMinutes = (medianish - (medianHours * 3600000)) / 60000;
 
     $('#median')[0].innerHTML = `${medianHours} hours, ${medianMinutes} minutes`;
-
     $('#busiest')[0].innerHTML = `${busiest}x: ${busyDays}`;
-
     $('#total')[0].innerHTML = total;
-
     $('#active')[0].innerHTML = uniqueDays;
   }
 }
@@ -405,7 +402,7 @@ monthBars = () => {
 
   let x = d3.scaleBand()
     .range([0, 300])
-    .domain(monthFreqs.map((d) => d.month ))
+    .domain(monthFreqs.map((d) => d.month))
     .padding(0.25);
 
   bars.append('g')
@@ -426,11 +423,11 @@ monthBars = () => {
     .data(monthFreqs)
     .enter()
     .append('rect')
-    .attr('id', (d) => { return d.month; })
-    .attr('x', (d) => { return x(d.month); })
-    .attr('y', (d) => { return y(d.freq); })
+    .attr('id', (d) => d.month)
+    .attr('x', (d) => x(d.month))
+    .attr('y', (d) => y(d.freq))
     .attr('width', x.bandwidth())
-    .attr('height', (d) => { return 150 - y(d.freq); })
+    .attr('height', (d) => 150 - y(d.freq))
     .attr('fill', '#FFFFFF')
 
   if (monthSelected != 'Year') {
@@ -442,11 +439,11 @@ monthBars = () => {
     .data(monthFreqs)
     .enter()
     .append('text')
-    .attr('x', (d) => { return x(d.month) + (x.bandwidth() / 6); })
+    .attr('x', (d) => x(d.month) + (x.bandwidth() / 6))
     .attr('class', 'barLabels')
-    .attr('y', (d) => { return y(d.freq) - 3; })
+    .attr('y', (d) => y(d.freq) - 3)
     .attr('fill', '#FFFFFF')
-    .text((d) => { return d.freq; })
+    .text((d) => d.freq)
 }
 
 dayBars = () => {
@@ -454,7 +451,7 @@ dayBars = () => {
 
   let x = d3.scaleBand()
     .range([0, 300])
-    .domain(dayFreqs.map((d) => { return d.day; }))
+    .domain(dayFreqs.map((d) => d.day))
     .padding(0.25);
 
   bars.append('g')
@@ -475,11 +472,11 @@ dayBars = () => {
     .data(dayFreqs)
     .enter()
     .append('rect')
-    .attr('id', (d) => { return d.day; })
-    .attr('x', (d) => { return x(d.day); })
-    .attr('y', (d) => { return y(d.freq); })
+    .attr('id', (d) => d.day)
+    .attr('x', (d) => x(d.day))
+    .attr('y', (d) => y(d.freq))
     .attr('width', x.bandwidth())
-    .attr('height', (d) => { return 150 - y(d.freq); })
+    .attr('height', (d) => 150 - y(d.freq))
     .attr('fill', '#FFFFFF')
 
   if (daySelected != 'Week') {
@@ -491,11 +488,11 @@ dayBars = () => {
     .data(dayFreqs)
     .enter()
     .append('text')
-    .attr('x', (d) => { return x(d.day) + (x.bandwidth() / 4); })
+    .attr('x', (d) => x(d.day) + (x.bandwidth() / 4))
     .attr('class', 'barLabels')
-    .attr('y', (d) => { return y(d.freq) - 3; })
+    .attr('y', (d) => y(d.freq) - 3)
     .attr('fill', '#FFFFFF')
-    .text((d) => { return d.freq; })
+    .text((d) => d.freq)
 }
 
 freqPie = () => {
@@ -573,7 +570,7 @@ blanks = () => {
 
   const blankKeys = {};
   for (piece of pieces) { blankKeys[piece.x] = piece.x; }
-  const blanks = Object.values(blankKeys).sort((a, b) => { return a - b; });
+  const blanks = Object.values(blankKeys).sort((a, b) => a - b);
   const numBlankKeys = blanks.length;
 
   let blankSpans = [];
@@ -585,12 +582,12 @@ blanks = () => {
     if (blankGap > longestBlank) { longestBlank = blankGap; }
   }
 
-  const lastBlankGap = blanks[0] + (10080 - blanks[numBlankKeys - 1]);
+  const lastBlankGap = blanks[0] + (BIGX - blanks[numBlankKeys - 1]);
   blankSpans.push(lastBlankGap);
   if (lastBlankGap > longestBlank) { longestBlank = blankGap; }
 
   blankSpans = blankSpans.filter((item, index) => blankSpans.indexOf(item) === index);
-  blankSpans.sort((a, b) => { return a - b; });
+  blankSpans.sort((a, b) => a - b);
 
   const threshold = blankSpans[Math.floor((val / 100) * blankSpans.length) - 1];
 
@@ -690,29 +687,26 @@ sliderVal = () => {
     let currV = vals[v];
     let l = currV.length;
     if (l > largestVert) {
-      let minX = 10080;
+      let minX = BIGX;
       let maxX = -1;
       for (p in currV) {
         if (currV[p].x < minX) { minX = currV[p].x; }
         if (currV[p].x > maxX) { maxX = currV[p].x; }
       }
-      if (maxX - minX == val) {
-        largestVert = l;
-      }
+      if (maxX - minX == val) { largestVert = l; }
     }
   }
 
   d3.selectAll('circle').style('opacity', 0.25);
   d3.selectAll('.verticals').remove();
 
-  // TO DO: should be defined somewhere else?
-  xScale = d3.scaleLinear().domain([0, 10080]).range([padding, w - 15]);
+  xScale = d3.scaleLinear().domain([0, BIGX]).range([padding, w - 15]);
 
   const ranges = [];
 
   for (v in vals) {
     if (vals[v].length == largestVert) {
-      let minX = 10080;
+      let minX = BIGX;
       let maxX = -1;
       for (p of vals[v]) {
         if (p.x < minX) { minX = p.x; }

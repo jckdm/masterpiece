@@ -88,14 +88,21 @@
            <table>
              <tr>
                <th>Busiest Ranges</th>
-               <th>Longest Gaps</th>
+               <th>Longest Interstices</th>
              </tr>
+             <tr>
+               <td>
+                 <i class="subhead">measures density</i>
+               </td>
+               <td>
+                 <i class="subhead">identifies gaps</i>
+               </td>
              <tr>
                <td class="verts">
                  <svg width="25" height="100%" class="vertEx">
                    <rect width="25" height="100%" style="fill:#FFFFFF; opacity:0.1"/>
                  </svg>
-                 <text>This algorithm uses the chosen length to identify range(s) that contain the highest frequency of data relative to other equally-sized ranges. Ties are unbroken.</text><br><br>
+                 <text>This algorithm identifies range(s) of the chosen length that contain the highest frequency of data relative to all other equally-sized ranges. Ties are unbroken.</text><br><br>
                  <div class="slide">
                    <input oninput="sliderVal();" id="vmins" type="range" value="60" step="5" min="0" max="120"><br>
                    <label id="labelvmins" for="vmins">60 minutes</label>
@@ -108,7 +115,7 @@
                 <svg width="25" height="100%" class="vertEx">
                   <rect width="25" height="100%" style="fill:#008AD8; opacity:0.1"/>
                 </svg>
-                 <text>This algorithm uses the chosen threshold to identify range(s) that contain no data and are larger than other range(s) that contain no data.</text><br><br>
+                 <text>This algorithm identifies range(s) that contain no data and have a length that is above the chosen threshold percentile.</text><br><br>
                  <div class="slide">
                    <input disabled="disabled" oninput="blanks();" id="blank" type="range" value="75" step="5" min="75" max="100"><br>
                    <label id="labelBlank" for="blank">>= 75th pctl.</label>
