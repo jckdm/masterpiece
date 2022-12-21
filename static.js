@@ -19,6 +19,7 @@ let total = 0;
 let dayFreqCounts = {};
 let analyzed = false;
 let charted = false;
+let graphed = false;
 let colored = true;
 
 const BIGX = 10080;

@@ -1,7 +1,7 @@
 # Masterpiece
 
 ## Overview
-Masterpiece is a visualization and analysis tool that identifies patterns in data of a user's habits.
+Masterpiece is a data visualization and analysis tool that identifies patterns in data of a user's habits.
 
 Inspired by the idea of a New Year's Resolution, Masterpiece considers data within the window of one year, and frames it within the cycle of a week, allowing users to understand their habits in relation to time at large.
 

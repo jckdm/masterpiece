@@ -62,7 +62,7 @@
            </table>
         </div>
       </div>
-      <button onclick="charts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">&#9737;&#xFE0E; visualize</button>
+      <button onclick="charts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">&#9862;&#xFE0E; visualize i</button>
       <div id="modalBar">
         <div id="modalBarGraphs" class="modal-content-graphs">
           <button onclick="$('#modalBar')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
@@ -72,13 +72,21 @@
           <br><br>
           <label class="label" id="labelDayBar" for="dayBar">Instances Per Day of Week</label><br>
           <svg id="dayBar"></svg>
-          <br><br>
-            <label class="label" id="labelPie" for="pieBox">Frequency Per Day, as Percentages of the Year</label><br>
+         </div>
+        </div>
+      </div>
+      <button onclick="graphs(); $('#modalPieLine')[0].style.display = 'block'; return false;" id="open">&#9863;&#xFE0E; visualize ii</button>
+      <div id="modalPieLine">
+        <div class="modal-content-graphs">
+          <button onclick="$('#modalPieLine')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
+          <label class="label" id="labelPie" for="pieBox">Frequency Per Day, as Percentages of the Year</label><br>
           <div id="pieBox">
             <svg id="dayFreqBarChart"></svg>
             <table id="pieKey"></table>
           </div>
-         </div>
+          <br><br>
+          <label class="label" id="labelLine" for="lineGraph">Frequency Per Day</label><br>
+          <div id="lineBox" style="width: 100%;"></div>
         </div>
       </div>
       <button onclick="$('#modalVerticals')[0].style.display = 'block'; return false;" id="open">&#9761;&#xFE0E; analyze</button>
@@ -133,7 +141,7 @@
       <div id="modalStart">
         <div class="modal-content">
           <center>
-          <h1><i>Masterpiece</i> is a visualization and analysis tool that identifies patterns in data of a user's habits.</h1>
+          <h1><i>Masterpiece</i> is a data visualization and analysis tool that identifies patterns in data of a user's habits.</h1>
           <h3>Inspired by the idea of a New Year's Resolution, <i>Masterpiece</i> considers data within the window of one year, and frames it within the cycle of a week, allowing users to understand their habits in relation to time at large.</h3>
           <br>
           <text>Explore a variety of filters, statistics, graphs, and methods of anaylsis. I hope you're horrified by what you discover!</text>

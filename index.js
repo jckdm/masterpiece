@@ -39,6 +39,7 @@ parseUploadedFile = () => {
       dayFreqCounts = {};
       analyzed = false;
       charted = false;
+      graphed = false;
       colored = true;
 
       Papa.parse(data, {
@@ -392,9 +393,85 @@ charts = () => {
   if (charted == false) {
     dayBars();
     monthBars();
-    freqPie();
     charted = true;
   }
+}
+
+graphs = () => {
+  if (graphed == false) {
+    freqPie();
+    line();
+    graphed = true;
+  }
+}
+
+window.onresize = (event) => {
+  line(window.innerWidth * 0.675);
+};
+
+line = (xWidth) => {
+  if (xWidth === undefined) { xWidth = window.innerWidth * 0.675; }
+
+  d3.select('#lineGraph').remove();
+
+  d3.select('#lineBox')
+  .append('svg')
+  .attr('id', 'lineGraph')
+  .attr('width', xWidth)
+  .attr('height', 125);
+
+  let d = new Date(2022, 0, 1);
+
+  let dayLine = [];
+  let index = 0;
+
+  let today = new Date();
+  let eoy = new Date(2023, 0, 1);
+
+  let len = 365;
+
+  if (today < eoy) { len = 365 - Math.floor((eoy - today) / 86400000); }
+
+  for (let i = 0; i < len; i++) {
+    let obj = objs[index];
+    let date = d.toLocaleString('en-US', { day: 'numeric', month: 'long' });
+
+    if (obj.day == date) {
+      dayLine.push({ day: d3.timeParse('%B %d')(obj.day), value: obj.count });
+      index++;
+    }
+    else { dayLine.push({ day: d3.timeParse('%B %d')(date), value: 0 }); }
+
+    d.setDate(d.getDate() + 1);
+  }
+
+  const svg = d3.select('#lineGraph');
+
+  const x = d3.scaleTime()
+      .domain(d3.extent(dayLine, (d) => d.day))
+      .rangeRound([0, xWidth]);
+
+  // svg.append('g')
+  // .attr("transform", "translate(0," + 125 + ")")
+  // .call(d3.axisBottom(x));
+
+  const y = d3.scaleLinear()
+      .domain(d3.extent(dayLine, (d) => d.value))
+      .rangeRound([125, 0]);
+
+  // svg.append('g')
+  // .call(d3.axisLeft(y));
+
+  const line = d3.line()
+      .x((d) => x(d.day))
+      .y((d) => y(d.value))
+
+  svg.append('path')
+      .datum(dayLine)
+      .attr('fill', 'none')
+      .attr('stroke', 'white')
+      .attr('stroke-width', 1)
+      .attr('d', line);
 }
 
 monthBars = () => {
