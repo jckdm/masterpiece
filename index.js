@@ -302,8 +302,8 @@ appendData = (filteredPieces, flag = false) => {
        d3.select('#tooltip')
           .style('visibility', 'visible')
           .style('left', () => {
-            if (d.x < 175) { return (event.pageX + 25 + 'px'); }
-            else { return (event.pageX - 100 + 'px'); }
+            if (d.x < 100) { return (event.pageX + 'px'); }
+            else { return (event.pageX - 48.5 + 'px'); }
           })
           .style('top', () => {
             if (d.y < 150) { return (event.pageY + 25 + 'px'); }
@@ -405,7 +405,7 @@ graphs = () => {
   }
 }
 
-window.onresize = (event) => {
+window.onresize = () => {
   line(window.innerWidth * 0.675);
 };
 
@@ -415,10 +415,10 @@ line = (xWidth) => {
   d3.select('#lineGraph').remove();
 
   d3.select('#lineBox')
-  .append('svg')
-  .attr('id', 'lineGraph')
-  .attr('width', xWidth)
-  .attr('height', 125);
+    .append('svg')
+    .attr('id', 'lineGraph')
+    .attr('width', xWidth)
+    .attr('height', 125);
 
   let d = new Date(2022, 0, 1);
 
@@ -437,10 +437,10 @@ line = (xWidth) => {
     let date = d.toLocaleString('en-US', { day: 'numeric', month: 'long' });
 
     if (obj.day == date) {
-      dayLine.push({ day: d3.timeParse('%B %d')(obj.day), value: obj.count });
+      dayLine.push({ day: new Date(d3.timeParse('%B %d')(obj.day).setYear(2022)), value: obj.count });
       index++;
     }
-    else { dayLine.push({ day: d3.timeParse('%B %d')(date), value: 0 }); }
+    else { dayLine.push({ day: new Date(d3.timeParse('%B %d')(date).setYear(2022)), value: 0 }); }
 
     d.setDate(d.getDate() + 1);
   }
@@ -449,7 +449,7 @@ line = (xWidth) => {
 
   const x = d3.scaleTime()
       .domain(d3.extent(dayLine, (d) => d.day))
-      .rangeRound([0, xWidth]);
+      .rangeRound([3, xWidth - 3]);
 
   // svg.append('g')
   // .attr("transform", "translate(0," + 125 + ")")
@@ -457,7 +457,7 @@ line = (xWidth) => {
 
   const y = d3.scaleLinear()
       .domain(d3.extent(dayLine, (d) => d.value))
-      .rangeRound([125, 0]);
+      .rangeRound([122, 3]);
 
   // svg.append('g')
   // .call(d3.axisLeft(y));
@@ -472,6 +472,28 @@ line = (xWidth) => {
       .attr('stroke', 'white')
       .attr('stroke-width', 1)
       .attr('d', line);
+
+  svg.selectAll('crap')
+    .data(dayLine)
+    .enter()
+    .append('circle')
+    .attr('x', (d) => d.day)
+    .attr('y', (d) => d.value)
+    .attr('cx', (d) => x(d.day))
+    .attr('cy', (d) => y(d.value))
+    .attr('r', 3)
+    .attr('fill', '#FFFFFF03')
+    .on('mouseover', (d) => {
+        d3.select('#tooltip')
+           .style('visibility', 'visible')
+           .style('left', () => event.pageX - 48.5 + 'px')
+           .style('top', () => event.pageY - 100 + 'px');
+
+        const labels = d.target.attributes;
+        const labelDate = new Date(labels.x.value);
+
+        $('#date').html(`<text>${labels.y.value}x:</text><br><text>${daysForLineChart[labelDate.getDay()]}</text><br><text>${monthsForLineChart[labelDate.getMonth()]}</text><br><text>${labelDate.getDate()}</text>`)})
+    .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') });
 }
 
 monthBars = () => {
