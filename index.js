@@ -16,45 +16,54 @@ parseUploadedFile = () => {
     type: "GET",
     url: file.name,
     success: (data) => {
-      d3.select('#main').remove();
+      if (data.slice(0, 26) != 'Month,Day,Date,Hour,Minute') {
+        $('#uploadError')[0].innerText = "Incorrect column headers."
+      }
+      else {
+        d3.select('#main').remove();
 
-      document.getElementById('verticalSpans').innerHTML = '';
-      document.getElementById('vmins').value = 60;
-      document.getElementById('labelvmins').innerHTML = `60 minutes`;
+        document.getElementById('verticalSpans').innerHTML = '';
+        document.getElementById('vmins').value = 60;
+        document.getElementById('labelvmins').innerHTML = `60 minutes`;
 
-      pieces = [];
-      objs = [];
-      gaps = [];
-      dayFreqs = [{'day': 'Monday', 'abb': 'M', 'freq': 0},{'day': 'Tuesday', 'abb': 'T', 'freq': 0},{'day': 'Wednesday', 'abb': 'W', 'freq': 0},{'day': 'Thursday', 'abb': 'Th', 'freq': 0},{'day': 'Friday', 'abb': 'F', 'freq': 0},{'day': 'Saturday', 'abb': 'S', 'freq': 0},{'day': 'Sunday', 'abb': 'Su', 'freq': 0}];
-      monthFreqs = [{'month': 'January', 'freq': 0},{'month': 'February', 'freq': 0},{'month': 'March', 'freq': 0},{'month': 'April', 'freq': 0},{'month': 'May', 'freq': 0},{'month': 'June', 'freq': 0},{'month': 'July', 'freq': 0},{'month': 'August', 'freq': 0},{'month': 'September', 'freq': 0},{'month': 'October', 'freq': 0},{'month': 'November', 'freq': 0},{'month': 'December', 'freq': 0}];
-      count = 0;
-      lastD = null;
-      yesterday = '';
-      uniqueDays = 0;
-      filteredPieces = [];
-      monthSelected, daySelected;
-      busyDays = '';
-      busiest = 0;
-      total = 0;
-      dayFreqCounts = {};
-      analyzed = false;
-      charted = false;
-      graphed = false;
-      colored = true;
+        document.getElementById('verticalBlanks').innerHTML = '';
+        document.getElementById('blank').value = 75;
+        document.getElementById('labelBlank').innerHTML = '>= 75th pctl.';
 
-      Papa.parse(data, {
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-        step: (row) => parseRow(row),
-        complete: () => {
-          d3.select('body').append('svg')
-            .attr('id', 'main')
-            .attr('width', w)
-            .attr('height', h);
-          scale(true);
-        }
-      })
+        pieces = [];
+        objs = [];
+        gaps = [];
+        dayFreqs = [{'day': 'Monday', 'abb': 'M', 'freq': 0},{'day': 'Tuesday', 'abb': 'T', 'freq': 0},{'day': 'Wednesday', 'abb': 'W', 'freq': 0},{'day': 'Thursday', 'abb': 'Th', 'freq': 0},{'day': 'Friday', 'abb': 'F', 'freq': 0},{'day': 'Saturday', 'abb': 'S', 'freq': 0},{'day': 'Sunday', 'abb': 'Su', 'freq': 0}];
+        monthFreqs = [{'month': 'January', 'freq': 0},{'month': 'February', 'freq': 0},{'month': 'March', 'freq': 0},{'month': 'April', 'freq': 0},{'month': 'May', 'freq': 0},{'month': 'June', 'freq': 0},{'month': 'July', 'freq': 0},{'month': 'August', 'freq': 0},{'month': 'September', 'freq': 0},{'month': 'October', 'freq': 0},{'month': 'November', 'freq': 0},{'month': 'December', 'freq': 0}];
+        count = 0;
+        lastD = null;
+        yesterday = '';
+        uniqueDays = 0;
+        filteredPieces = [];
+        monthSelected, daySelected;
+        busyDays = '';
+        busiest = 0;
+        total = 0;
+        dayFreqCounts = {};
+        analyzed = false;
+        charted = false;
+        graphed = false;
+        colored = true;
+
+        Papa.parse(data, {
+          header: true,
+          dynamicTyping: true,
+          skipEmptyLines: true,
+          step: (row) => parseRow(row),
+          complete: () => {
+            d3.select('body').append('svg')
+              .attr('id', 'main')
+              .attr('width', w)
+              .attr('height', h);
+            scale(true);
+          }
+        })
+      }
     }
   });
 }
@@ -72,62 +81,67 @@ toggleColor = () => {
 
 parseRow = (row) => {
   const r = row.data;
-  const x = (days[r.Day] * SMALLX) + (r.Hour * 60) + r.Minute;
-  const y = monthMarks[months[r.Month]] + r.Date;
 
-  pieces.push({
-    'x': x,
-    'y': y,
-    'month': r.Month,
-    'date': r.Date,
-    'day': r.Day,
-    'hour': r.Hour,
-    'minute': r.Minute,
-    'index': total
-  })
+  if (r.Date >= 1 && r.Date <= 31 && r.Day in days && r.Hour >= 0 && r.Hour <= 23 && r.Minute >= 0 && r.Minute <= 59 && r.Month in months) {
+    const x = (days[r.Day] * SMALLX) + (r.Hour * 60) + r.Minute;
+    const y = monthMarks[months[r.Month]] + r.Date;
 
-  total++;
-
-  dayFreqs[days[r.Day]].freq += 1;
-  monthFreqs[months[r.Month]].freq += 1;
-
-  const d = new Date(2022, months[r.Month], r.Date, r.Hour, r.Minute);
-
-  if (count != 0) {
-    gaps.push(d - lastD);
-    lastD = d;
-    count++;
-  }
-  else {
-    count++;
-    lastD = d;
-  }
-
-  const today = `${r.Month} ${r.Date}`;
-  const now = `${r.Hour} ${r.Minute}`;
-
-  if (today == yesterday) {
-    objs[uniqueDays - 1].count += 1;
-    objs[uniqueDays - 1].times.push(now);
-  }
-  else {
-    objs.push({
-      'day': today,
-      'count': 1,
-      'times': [now]
+    pieces.push({
+      'x': x,
+      'y': y,
+      'month': r.Month,
+      'date': r.Date,
+      'day': r.Day,
+      'hour': r.Hour,
+      'minute': r.Minute,
+      'index': total
     })
-    let yesterdaysCount = objs[uniqueDays - 1]?.count;
-    if (yesterdaysCount > busiest) {
-      busiest = yesterdaysCount;
-      busyDays = yesterday;
-    }
-    else if (yesterdaysCount == busiest) {
-      busyDays += `, ${yesterday}`;
-    }
-    uniqueDays++;
-  }
 
-  yesterday = today;
+    total++;
+
+    dayFreqs[days[r.Day]].freq += 1;
+    monthFreqs[months[r.Month]].freq += 1;
+
+    const d = new Date(2022, months[r.Month], r.Date, r.Hour, r.Minute);
+
+    if (count != 0) {
+      gaps.push(d - lastD);
+      lastD = d;
+      count++;
+    }
+    else {
+      count++;
+      lastD = d;
+    }
+
+    const today = `${r.Month} ${r.Date}`;
+    const now = `${r.Hour} ${r.Minute}`;
+
+    if (today == yesterday) {
+      objs[uniqueDays - 1].count += 1;
+      objs[uniqueDays - 1].times.push(now);
+    }
+    else {
+      objs.push({
+        'day': today,
+        'count': 1,
+        'times': [now]
+      })
+      let yesterdaysCount = objs[uniqueDays - 1]?.count;
+      if (yesterdaysCount > busiest) {
+        busiest = yesterdaysCount;
+        busyDays = yesterday;
+      }
+      else if (yesterdaysCount == busiest) {
+        busyDays += `, ${yesterday}`;
+      }
+      uniqueDays++;
+    }
+    yesterday = today;
+  }
+  else {
+    $('#uploadError')[0].innerText = `Error on row ${total} (0-index, excluding headers).`;
+  }
 }
 
 scale = (flag = false) => {
@@ -451,16 +465,9 @@ line = (xWidth) => {
       .domain(d3.extent(dayLine, (d) => d.day))
       .rangeRound([3, xWidth - 3]);
 
-  // svg.append('g')
-  // .attr("transform", "translate(0," + 125 + ")")
-  // .call(d3.axisBottom(x));
-
   const y = d3.scaleLinear()
       .domain(d3.extent(dayLine, (d) => d.value))
       .rangeRound([122, 3]);
-
-  // svg.append('g')
-  // .call(d3.axisLeft(y));
 
   const line = d3.line()
       .x((d) => x(d.day))
