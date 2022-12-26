@@ -1,3 +1,17 @@
+upload = () => {
+  $('#modalUpload')[0].style.display = 'block';
+
+  const yearDrop = document.getElementById('dataYear');
+
+  if (yearDrop.childNodes.length == 0) {
+    for (let i = 0; i < 29; i++) {
+      let yr = 2022 + i;
+      yearDrop.appendChild(new Option(yr, yr));
+    }
+    yearDrop.value = new Date().getFullYear();
+  }
+}
+
 parseUploadedFile = () => {
   $('#uploadError')[0].innerText = "";
   let fileList = $('#uploadedFile')[0].files;
@@ -30,9 +44,21 @@ parseUploadedFile = () => {
         document.getElementById('blank').value = 75;
         document.getElementById('labelBlank').innerHTML = '>= 75th pctl.';
 
+        d3.select('#lineGraph').remove();
+
+        year = parseInt(document.getElementById('dataYear').value);
+        const leap = (year % 100 == 0) ? (year % 400 == 0) : (year % 4 == 0);
+
+        if (leap) {
+          DAYS = 366;
+          monthMarks = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+          monthLengths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        }
+
         pieces = [];
         objs = [];
         gaps = [];
+        dayLine = [];
         dayFreqs = [{'day': 'Monday', 'abb': 'M', 'freq': 0},{'day': 'Tuesday', 'abb': 'T', 'freq': 0},{'day': 'Wednesday', 'abb': 'W', 'freq': 0},{'day': 'Thursday', 'abb': 'Th', 'freq': 0},{'day': 'Friday', 'abb': 'F', 'freq': 0},{'day': 'Saturday', 'abb': 'S', 'freq': 0},{'day': 'Sunday', 'abb': 'Su', 'freq': 0}];
         monthFreqs = [{'month': 'January', 'freq': 0},{'month': 'February', 'freq': 0},{'month': 'March', 'freq': 0},{'month': 'April', 'freq': 0},{'month': 'May', 'freq': 0},{'month': 'June', 'freq': 0},{'month': 'July', 'freq': 0},{'month': 'August', 'freq': 0},{'month': 'September', 'freq': 0},{'month': 'October', 'freq': 0},{'month': 'November', 'freq': 0},{'month': 'December', 'freq': 0}];
         count = 0;
@@ -102,7 +128,7 @@ parseRow = (row) => {
     dayFreqs[days[r.Day]].freq += 1;
     monthFreqs[months[r.Month]].freq += 1;
 
-    const d = new Date(2022, months[r.Month], r.Date, r.Hour, r.Minute);
+    const d = new Date(YEAR, months[r.Month], r.Date, r.Hour, r.Minute);
 
     if (count != 0) {
       gaps.push(d - lastD);
@@ -205,8 +231,8 @@ scale = (flag = false) => {
     xTickFormat = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'NWE'];
   }
   if (monthSelected == 'Year') {
-    yMax = 365;
-    yTickValues = [1, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+    yMax = DAYS;
+    yTickValues = [1, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366];
     yTickFormat = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'NYE'];
   }
   if (daySelected != 'Week' || monthSelected != 'Year') {
@@ -286,7 +312,7 @@ scale = (flag = false) => {
     .attr('transform', 'translate(' + padding + ',0)')
     .call(yAxis);
 
-  if (flag) { appendData(filteredPieces, flag); }
+  if (flag) { appendData(filteredPieces); }
 }
 
 run = () => {
@@ -294,7 +320,7 @@ run = () => {
   $('#modalStart')[0].style.display = 'none';
 }
 
-appendData = (filteredPieces, flag = false) => {
+appendData = (filteredPieces) => {
   // append tooltip
   d3.select('body').append('div').attr('id', 'tooltip');
 
@@ -334,25 +360,11 @@ appendData = (filteredPieces, flag = false) => {
      })
      .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') })
 
-     if (!flag) {
-       for (obj of objs) {
-         let c = obj.count;
-         if (c in dayFreqCounts) { dayFreqCounts[c] += 1; }
-         else { dayFreqCounts[c] = 1; }
-       }
+     for (obj of objs) {
+       let c = obj.count;
+       if (c in dayFreqCounts) { dayFreqCounts[c] += 1; }
+       else { dayFreqCounts[c] = 1; }
      }
-
-     let today = new Date();
-     let eoy = new Date(2023, 0, 1);
-
-     if (today < eoy) {
-       const start = new Date(2022, 0, 0);
-       const diff = today - start;
-       const day = Math.floor(diff / 86400000);
-
-       dayFreqCounts[0] = day - uniqueDays;
-     }
-     else { dayFreqCounts[0] = 365 - uniqueDays; }
 }
 
 analyze = () => {
@@ -364,8 +376,8 @@ analyze = () => {
     for (let i = 0; i < pieces.length - 1; i++) {
       const p1 = pieces[i];
       const p2 = pieces[i + 1];
-      const d1 = new Date(2022, months[p1.month], p1.date, p1.hour, p1.minute);
-      const d2 = new Date(2022, months[p2.month], p2.date, p2.hour, p2.minute);
+      const d1 = new Date(YEAR, months[p1.month], p1.date, p1.hour, p1.minute);
+      const d2 = new Date(YEAR, months[p2.month], p2.date, p2.hour, p2.minute);
 
       const interval = d2 - d1;
       if (interval < shortest) {
@@ -377,9 +389,9 @@ analyze = () => {
     }
     $('#shortest')[0].innerHTML = `${(shortest / 60000)} minutes`;
 
-    const longDays = Math.floor(longest / 86400000);
-    const longHours = Math.floor((longest - (longDays * 86400000)) / 3600000);
-    const longMinutes = Math.floor((longest - ((longDays * 86400000) + (longHours * 3600000))) / 60000);
+    const longDays = Math.floor(longest / MILLI);
+    const longHours = Math.floor((longest - (longDays * MILLI)) / 3600000);
+    const longMinutes = Math.floor((longest - ((longDays * MILLI) + (longHours * 3600000))) / 60000);
 
     $('#longest')[0].innerHTML = `${longDays} days, ${longHours} hours, ${longMinutes} minutes`;
 
@@ -413,51 +425,49 @@ charts = () => {
 
 graphs = () => {
   if (graphed == false) {
-    freqPie();
-    line();
+    line(false);
     graphed = true;
   }
 }
 
-window.onresize = () => {
-  line(window.innerWidth * 0.675);
-};
+window.onresize = () => { line(true); };
 
-line = (xWidth) => {
-  if (xWidth === undefined) { xWidth = window.innerWidth * 0.675; }
+line = (flag) => {
+  const xWidth = window.innerWidth * 0.675;
 
-  d3.select('#lineGraph').remove();
+  if (flag) { d3.select('#lineGraph').remove(); }
+  // first time
+  else {
+    let d = new Date(YEAR, 0, 1);
+
+    let index = 0;
+    let zeroes = 0;
+
+    for (let i = 0; i < objs.length; i++) {
+      let obj = objs[index];
+      let date = d.toLocaleString('en-US', { day: 'numeric', month: 'long' });
+
+      if (obj.day == date) {
+        dayLine.push({ day: new Date(d3.timeParse('%B %d')(obj.day).setYear(YEAR)), value: obj.count });
+        index++;
+      }
+      else {
+        dayLine.push({ day: new Date(d3.timeParse('%B %d')(date).setYear(YEAR)), value: 0 });
+        zeroes++;
+        i--;
+      }
+      d.setDate(d.getDate() + 1);
+    }
+
+    dayFreqCounts[0] = zeroes;
+    freqPie();
+  }
 
   d3.select('#lineBox')
     .append('svg')
     .attr('id', 'lineGraph')
     .attr('width', xWidth)
     .attr('height', 125);
-
-  let d = new Date(2022, 0, 1);
-
-  let dayLine = [];
-  let index = 0;
-
-  let today = new Date();
-  let eoy = new Date(2023, 0, 1);
-
-  let len = 365;
-
-  if (today < eoy) { len = 365 - Math.floor((eoy - today) / 86400000); }
-
-  for (let i = 0; i < len; i++) {
-    let obj = objs[index];
-    let date = d.toLocaleString('en-US', { day: 'numeric', month: 'long' });
-
-    if (obj.day == date) {
-      dayLine.push({ day: new Date(d3.timeParse('%B %d')(obj.day).setYear(2022)), value: obj.count });
-      index++;
-    }
-    else { dayLine.push({ day: new Date(d3.timeParse('%B %d')(date).setYear(2022)), value: 0 }); }
-
-    d.setDate(d.getDate() + 1);
-  }
 
   const svg = d3.select('#lineGraph');
 

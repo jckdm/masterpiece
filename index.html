@@ -167,7 +167,7 @@
             <text>And on <a href="https://github.com/jckdm/masterpiece" target="_blank">GitHub</a>...</text>
           </div>
         </div>
-        <button onclick="$('#modalUpload')[0].style.display = 'block'; return false;" id="open">&#8673;&#xFE0E; data</button>
+        <button onclick="upload(); return false;" id="open">&#8673;&#xFE0E; data</button>
         <div id="modalUpload">
           <div class="modal-content">
             <button onclick="$('#modalUpload')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
@@ -177,6 +177,9 @@
              <div id="fileUploader">
                <input id="uploadedFile" type="file">
              </div>
+             <br>
+             <select id="dataYear"></select>
+             <label for="dataYear">Data Year</label>
              <br><br>
              <button onclick="parseUploadedFile(); return false;">&#10012;&#xFE0E; parse file</button>
              <text id="uploadError"><text>
