@@ -22,6 +22,7 @@ let analyzed = false;
 let charted = false;
 let graphed = false;
 let colored = true;
+let viewingLine = false;
 
 const BIGX = 10080;
 const SMALLX = 1440;

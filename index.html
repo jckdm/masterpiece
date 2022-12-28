@@ -1,20 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
-    <title>Masterpiece 2022</title>
-    <meta name="description" content="Masterpiece 2022"/>
+    <title>Masterpiece</title>
+    <meta name="description" content="Masterpiece is a data visualization and analysis tool that identifies patterns in data of a user's habits."/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
     <script type="text/javascript" src="papaparse.min.js"></script>
     <script type="text/javascript" src="static.js"></script>
     <script type="text/javascript" src="index.js"></script>
     <script type="text/javascript" src="parse.js"></script>
     <link rel="stylesheet" type="text/css" href="index.css">
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Introduction! -->
+    <div id="modalStart">
+      <div class="modal-content">
+        <center>
+        <h1><i>Masterpiece</i> is a data visualization and analysis tool that identifies patterns in data of a user's habits.</h1>
+        <h3>Inspired by the idea of a New Year's Resolution, <i>Masterpiece</i> considers data within the window of one year, and frames it within the cycle of a week, allowing users to understand their habits in relation to time at large.</h3>
+        <br>
+        <text>Explore a variety of filters, statistics, graphs, and methods of anaylsis. I hope you're horrified by what you discover!</text>
+        <br><br>
+        <button onclick="run(); return false;" id="run">&#9884;&#xFE0E; process sample data</button>
+        <br><br>
+        <text>Or, you can upload your own file. Your data will not be stored.</text>
+        </center>
+      </div>
+    </div>
     <form>
+      <!-- Year -->
       <select id="month" onchange="scale(true);">
         <option value="Year" selected>Year</option>
         <option value="January">January</option>
@@ -30,6 +46,7 @@
         <option value="November">November</option>
         <option value="December">December</option>
       </select>
+      <!-- Week -->
       <select id="day" onchange="scale(true);">
         <option value="Week" selected>Week</option>
         <option value="Monday">Monday</option>
@@ -40,6 +57,7 @@
         <option value="Saturday">Saturday</option>
         <option value="Sunday">Sunday</option>
       </select>
+      <!-- count -->
       <button onclick="analyze(); $('#modal')[0].style.display = 'block'; return false;" id="open">&#9736;&#xFE0E; count</button>
       <div id="modal">
         <div class="modal-content">
@@ -62,6 +80,7 @@
            </table>
         </div>
       </div>
+      <!-- visualize i -->
       <button onclick="charts(); $('#modalBar')[0].style.display = 'block'; return false;" id="open">&#9862;&#xFE0E; visualize i</button>
       <div id="modalBar">
         <div id="modalBarGraphs" class="modal-content-graphs">
@@ -75,10 +94,11 @@
          </div>
         </div>
       </div>
+      <!-- visualize ii -->
       <button onclick="graphs(); $('#modalPieLine')[0].style.display = 'block'; return false;" id="open">&#9863;&#xFE0E; visualize ii</button>
       <div id="modalPieLine">
         <div class="modal-content-graphs">
-          <button onclick="$('#modalPieLine')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
+          <button onclick="$('#modalPieLine')[0].style.display = 'none'; viewingLine = false; return false;" class="close">&#9900;&#xFE0E;</button>
           <label class="label" id="labelPie" for="pieBox">Frequency Per Day, as Percentages of the Year</label><br>
           <div id="pieBox">
             <svg id="dayFreqBarChart"></svg>
@@ -89,6 +109,7 @@
           <div id="lineBox" style="width: 100%;"></div>
         </div>
       </div>
+      <!-- analyze -->
       <button onclick="$('#modalVerticals')[0].style.display = 'block'; return false;" id="open">&#9761;&#xFE0E; analyze</button>
       <div id="modalVerticals">
         <div class="modal-content">
@@ -136,25 +157,13 @@
          </table>
         </div>
       </div>
+      <!-- color -->
       <button onclick="toggleColor(); return false;">&#9775;&#xFE0E; color</button>
-      </form>
-      <div id="modalStart">
-        <div class="modal-content">
-          <center>
-          <h1><i>Masterpiece</i> is a data visualization and analysis tool that identifies patterns in data of a user's habits.</h1>
-          <h3>Inspired by the idea of a New Year's Resolution, <i>Masterpiece</i> considers data within the window of one year, and frames it within the cycle of a week, allowing users to understand their habits in relation to time at large.</h3>
-          <br>
-          <text>Explore a variety of filters, statistics, graphs, and methods of anaylsis. I hope you're horrified by what you discover!</text>
-          <br><br>
-          <button onclick="run(); return false;" id="run">&#9884;&#xFE0E; process sample data</button>
-          <br><br>
-          <text>Or, you can upload your own file. Your data will not be stored.</text>
-          </center>
-        </div>
-      </div>
-      <form class="form-right">
-        <button onclick="$('#modalInfo')[0].style.display = 'block'; return false;" id="open">&#8258;&#xFE0E; thoughts</button>
-        <div id="modalInfo">
+    </form>
+    <form class="form-right">
+      <!-- thoughts -->
+      <button onclick="$('#modalInfo')[0].style.display = 'block'; return false;" id="open">&#8258;&#xFE0E; thoughts</button>
+      <div id="modalInfo">
           <div class="modal-content">
             <button onclick="$('#modalInfo')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
             <text><i>Masterpiece</i> is also an experiment in recognizing the bias that is implicitly packaged together with self-reporded data. This bias is created in a self-fulfilling prophecy that is inextricable from manual data entry: as time progresses and data is recorded, an individual becomes accustomed to, self-aware of, and eventually hyper-aware of the habit they are tracking. And what is the relationship between my simultaneous creation of the tool, and the data that feeds it?</text>
@@ -167,8 +176,9 @@
             <text>And on <a href="https://github.com/jckdm/masterpiece" target="_blank">GitHub</a>...</text>
           </div>
         </div>
-        <button onclick="upload(); return false;" id="open">&#8673;&#xFE0E; data</button>
-        <div id="modalUpload">
+      <!-- data -->
+      <button onclick="upload(); return false;" id="open">&#8673;&#xFE0E; data</button>
+      <div id="modalUpload">
           <div class="modal-content">
             <button onclick="$('#modalUpload')[0].style.display = 'none'; return false;" class="close">&#9900;&#xFE0E;</button>
              <text>Upload a .csv file with headers:</text><br><br>
@@ -185,9 +195,8 @@
              <text id="uploadError"><text>
           </div>
         </div>
-      </form>
-    <div id="tooltip">
-      <text id="date"></text>
-    </div>
-</body>
+    </form>
+    <!-- Scatterplot tooltip -->
+    <div id="tooltip"><text id="date"></text></div>
+  </body>
 </html>

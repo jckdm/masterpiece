@@ -1,27 +1,42 @@
+// triggered on clicking "process sample data"
+// just a shell function
+run = () => {
+  appendData(filteredPieces);
+  $('#modalStart')[0].style.display = 'none';
+}
+
+// triggered on clicking the "data"
 upload = () => {
   $('#modalUpload')[0].style.display = 'block';
 
   const yearDrop = document.getElementById('dataYear');
 
+  // only append dropdown options if first time opening modal
   if (yearDrop.childNodes.length == 0) {
+    // go up to 2050 bc the world will be over by then anyway
     for (let i = 0; i < 29; i++) {
       let yr = 2022 + i;
       yearDrop.appendChild(new Option(yr, yr));
     }
+    // set to current year
     yearDrop.value = new Date().getFullYear();
   }
 }
 
+// triggered on clicking "parse file"
 parseUploadedFile = () => {
+  // clear prev errors
   $('#uploadError')[0].innerText = "";
   let fileList = $('#uploadedFile')[0].files;
 
+  // did you even upload a file
   if (fileList.length < 1) {
     $('#uploadError')[0].innerText = "No file uploaded."
   }
 
   const file = fileList[0];
 
+  // file must be .cvs
   if (file.name.split('.')[1] != 'csv') {
     $('#uploadError')[0].innerText = "Incorrect file type."
   }
@@ -30,11 +45,14 @@ parseUploadedFile = () => {
     type: "GET",
     url: file.name,
     success: (data) => {
+      // check headers
       if (data.slice(0, 26) != 'Month,Day,Date,Hour,Minute') {
         $('#uploadError')[0].innerText = "Incorrect column headers."
       }
       else {
+        // remove main svg and reset all adjustable fields
         d3.select('#main').remove();
+        d3.select('#lineGraph').remove();
 
         document.getElementById('verticalSpans').innerHTML = '';
         document.getElementById('vmins').value = 60;
@@ -44,17 +62,18 @@ parseUploadedFile = () => {
         document.getElementById('blank').value = 75;
         document.getElementById('labelBlank').innerHTML = '>= 75th pctl.';
 
-        d3.select('#lineGraph').remove();
-
+        // check if data year is a leap year
         year = parseInt(document.getElementById('dataYear').value);
         const leap = (year % 100 == 0) ? (year % 400 == 0) : (year % 4 == 0);
 
+        // adjust length of february and cascading effects
         if (leap) {
           DAYS = 366;
           monthMarks = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
           monthLengths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         }
 
+        // reset all relevant variables
         pieces = [];
         objs = [];
         gaps = [];
@@ -76,16 +95,15 @@ parseUploadedFile = () => {
         graphed = false;
         colored = true;
 
+        // parse uploaded file!
         Papa.parse(data, {
           header: true,
           dynamicTyping: true,
           skipEmptyLines: true,
           step: (row) => parseRow(row),
           complete: () => {
-            d3.select('body').append('svg')
-              .attr('id', 'main')
-              .attr('width', w)
-              .attr('height', h);
+            d3.select('body').append('svg').attr('id', 'main').attr('width', w).attr('height', h);
+            // and this time, append the data right away
             scale(true);
           }
         })
@@ -94,24 +112,33 @@ parseUploadedFile = () => {
   });
 }
 
+// triggered on clicking "color"
 toggleColor = () => {
+  // make all circles white
   if (colored) { d3.selectAll('circle').style('fill', '#FFFFFF'); }
   else {
     const circles = d3.selectAll('circle')._groups[0];
+    // reset all circles colors based on month
     for (circle of circles) {
       circle.attributes.style.value = colors[circle.__data__.month];
     }
   }
+  // flip the flag
   colored = !colored;
 }
 
+// called from Papa parsing function per row
 parseRow = (row) => {
   const r = row.data;
 
+  // quick data validation on day, date, month, hour, and minute
   if (r.Date >= 1 && r.Date <= 31 && r.Day in days && r.Hour >= 0 && r.Hour <= 23 && r.Minute >= 0 && r.Minute <= 59 && r.Month in months) {
+    // x coord is minutes from Monday at 12am
     const x = (days[r.Day] * SMALLX) + (r.Hour * 60) + r.Minute;
+    // y coord is days since Jan 1
     const y = monthMarks[months[r.Month]] + r.Date;
 
+    // assemble array of objs with coords and such
     pieces.push({
       'x': x,
       'y': y,
@@ -123,18 +150,23 @@ parseRow = (row) => {
       'index': total
     })
 
+    // total number of data points
     total++;
 
+    // total count per day
     dayFreqs[days[r.Day]].freq += 1;
+    // total count per month
     monthFreqs[months[r.Month]].freq += 1;
 
     const d = new Date(YEAR, months[r.Month], r.Date, r.Hour, r.Minute);
 
+    // calculate difference between points
     if (count != 0) {
       gaps.push(d - lastD);
       lastD = d;
       count++;
     }
+    // no gap at start
     else {
       count++;
       lastD = d;
@@ -143,21 +175,25 @@ parseRow = (row) => {
     const today = `${r.Month} ${r.Date}`;
     const now = `${r.Hour} ${r.Minute}`;
 
+    // count number of instances per calendar day and record their times
     if (today == yesterday) {
       objs[uniqueDays - 1].count += 1;
       objs[uniqueDays - 1].times.push(now);
     }
+    // if it's the first instance on this day
     else {
       objs.push({
         'day': today,
         'count': 1,
         'times': [now]
       })
+      // check if prev day had a count higher than current maximum
       let yesterdaysCount = objs[uniqueDays - 1]?.count;
       if (yesterdaysCount > busiest) {
         busiest = yesterdaysCount;
         busyDays = yesterday;
       }
+      // concatenate string of busiest days
       else if (yesterdaysCount == busiest) {
         busyDays += `, ${yesterday}`;
       }
@@ -170,6 +206,7 @@ parseRow = (row) => {
   }
 }
 
+// called at completion of Papa parsing function AND via Year & Week dropdowns
 scale = (flag = false) => {
   // remove data
   d3.selectAll('circle').remove();
@@ -180,6 +217,7 @@ scale = (flag = false) => {
   d3.select('.yaxis').remove();
   d3.select('.gridH').remove();
 
+  // values from dropdowns
   daySelected = $('#day')[0].value;
   monthSelected = $('#month')[0].value;
 
@@ -197,6 +235,7 @@ scale = (flag = false) => {
   }
 
   let monthBars = $('#monthBar')[0].children;
+  // set all month bars to white
   if (monthBars.length > 0) {
     for (bar of monthBars) {
       if (bar.nodeName == 'rect') {
@@ -204,7 +243,7 @@ scale = (flag = false) => {
       }
     }
   }
-
+  // set all day bars to white
   let dayBars = $('#dayBar')[0].children;
   if (dayBars.length > 0) {
     for (bar of dayBars) {
@@ -216,33 +255,40 @@ scale = (flag = false) => {
 
   filteredPieces = [];
 
+  // if full year view
   if (daySelected == 'Week' && monthSelected == 'Year') {
     filteredPieces = JSON.parse(JSON.stringify(pieces));
 
+    // enable analysis buttons
     const clearBtns = document.getElementsByClassName('clear');
     clearBtns[0].disabled = false;
     clearBtns[1].disabled = false;
     document.getElementById('vmins').disabled = false;
     document.getElementById('blank').disabled = false;
   }
+  // if full week, but one month
   if (daySelected == 'Week') {
     xMax = BIGX;
     xTickValues = [0, 1440, 2880, 4320, 5760, 7200, 8640, 10080];
     xTickFormat = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'NWE'];
   }
+  // if full year, but one day
   if (monthSelected == 'Year') {
     yMax = DAYS;
     yTickValues = [1, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366];
     yTickFormat = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'NYE'];
   }
+  // if either isn't full view
   if (daySelected != 'Week' || monthSelected != 'Year') {
 
+    // disdable analysis buttons
     const clearBtns = document.getElementsByClassName('clear');
     clearBtns[0].disabled = true;
     clearBtns[1].disabled = true;
     document.getElementById('vmins').disabled = true;
     document.getElementById('blank').disabled = true;
 
+    // filter scatterplot view
     for (piece of pieces) {
       if ((piece.day == daySelected || daySelected == 'Week') && (piece.month == monthSelected || monthSelected == 'Year')) {
         let newPiece = JSON.parse(JSON.stringify(piece));
@@ -255,23 +301,23 @@ scale = (flag = false) => {
         filteredPieces.push(newPiece);
       }
     }
+    // highlight selected month bar
     if (monthSelected != 'Year' && charted == true) {
       document.getElementById(monthSelected).attributes.fill.value = '#808080';
     }
+    // highlight selected day bar
     if (daySelected != 'Week' && charted == true) {
       document.getElementById(daySelected).attributes.fill.value = '#808080';
     }
   }
 
-  xScale = d3.scaleLinear()
-    .domain([0, xMax]).range([padding, w - 15])
+  xScale = d3.scaleLinear().domain([0, xMax]).range([padding, w - 15])
 
   const xAxis = d3.axisBottom().scale(xScale)
     .tickValues(xTickValues)
     .tickFormat((d, i) => xTickFormat[i]);
 
-  yScale = d3.scaleLinear()
-    .domain([yMax, 1]).range([h - padding, padding]);
+  yScale = d3.scaleLinear().domain([yMax, 1]).range([h - padding, padding]);
 
   const yAxis = d3.axisLeft().scale(yScale)
     .tickValues(yTickValues)
@@ -279,17 +325,17 @@ scale = (flag = false) => {
 
   // vertical gridlines
   const vGridlines = d3.axisTop()
-      .tickFormat('')
-      .tickValues(xTickValues)
-      .tickSize(padding - h)
-      .scale(xScale);
+    .tickFormat('')
+    .tickValues(xTickValues)
+    .tickSize(padding - h)
+    .scale(xScale);
 
   // vertical gridlines
   const hGridlines = d3.axisRight()
-      .tickFormat('')
-      .tickValues(yTickValues)
-      .tickSize(w + padding)
-      .scale(yScale);
+    .tickFormat('')
+    .tickValues(yTickValues)
+    .tickSize(w + padding)
+    .scale(yScale);
 
   // vertical gridlines
   d3.select('#main').append('g')
@@ -312,14 +358,11 @@ scale = (flag = false) => {
     .attr('transform', 'translate(' + padding + ',0)')
     .call(yAxis);
 
+  // append data to scatterplot!
   if (flag) { appendData(filteredPieces); }
 }
 
-run = () => {
-  appendData(filteredPieces);
-  $('#modalStart')[0].style.display = 'none';
-}
-
+// triggered on clicking "process sample data" && called at the end of scale()
 appendData = (filteredPieces) => {
   // append tooltip
   d3.select('body').append('div').attr('id', 'tooltip');
@@ -339,6 +382,7 @@ appendData = (filteredPieces) => {
      .text((d) => d)
      .on('mouseover', (d) => {
 
+       // bound tooltip by edges of scatterplot
        d3.select('#tooltip')
           .style('visibility', 'visible')
           .style('left', () => {
@@ -350,6 +394,7 @@ appendData = (filteredPieces) => {
             else { return (event.pageY - 100 + 'px'); }
           })
 
+      // format date for tooltip
       const dt = (d.target.__data__);
 
       const hour = dt.hour.toString().length == 1 ? '0'.concat(dt.hour) : dt.hour;
@@ -360,6 +405,7 @@ appendData = (filteredPieces) => {
      })
      .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') })
 
+     // count how many days was the action performend a given number of times
      for (obj of objs) {
        let c = obj.count;
        if (c in dayFreqCounts) { dayFreqCounts[c] += 1; }
@@ -367,12 +413,15 @@ appendData = (filteredPieces) => {
      }
 }
 
+// triggered on clicking "count"
 analyze = () => {
+  // if first time opening modal
   if (analyzed == false) {
     analyzed = true;
     let shortest = Number.MAX_VALUE;
     let longest = Number.MIN_VALUE;
 
+    // calculate shortest and longest gaps
     for (let i = 0; i < pieces.length - 1; i++) {
       const p1 = pieces[i];
       const p2 = pieces[i + 1];
@@ -380,42 +429,43 @@ analyze = () => {
       const d2 = new Date(YEAR, months[p2.month], p2.date, p2.hour, p2.minute);
 
       const interval = d2 - d1;
-      if (interval < shortest) {
-        shortest = interval;
-      }
-      else if (interval > longest) {
-        longest = interval;
-      }
+      if (interval < shortest) { shortest = interval; }
+      else if (interval > longest) { longest = interval; }
     }
     $('#shortest')[0].innerHTML = `${(shortest / 60000)} minutes`;
 
+    // temp conversion variables
     const longDays = Math.floor(longest / MILLI);
     const longHours = Math.floor((longest - (longDays * MILLI)) / 3600000);
     const longMinutes = Math.floor((longest - ((longDays * MILLI) + (longHours * 3600000))) / 60000);
 
     $('#longest')[0].innerHTML = `${longDays} days, ${longHours} hours, ${longMinutes} minutes`;
 
+    // sort gaps to find median
     gaps.sort(sort = (a, b) => a - b);
     let medianish = null;
     // odd
-    if ((count - 1) % 2 == 1) {
-      medianish = gaps[count / 2];
-    }
+    if ((count - 1) % 2 == 1) { medianish = gaps[count / 2]; }
+    // even
     else {
       let middish = Math.floor((count - 1) / 2);
       medianish = (gaps[middish] + gaps[middish + 1]) / 2;
     }
+    // conversion vars
     const medianHours = Math.floor(medianish / 3600000);
     const medianMinutes = (medianish - (medianHours * 3600000)) / 60000;
 
-    $('#median')[0].innerHTML = `${medianHours} hours, ${medianMinutes} minutes`;
-    $('#busiest')[0].innerHTML = `${busiest}x: ${busyDays}`;
-    $('#total')[0].innerHTML = total;
-    $('#active')[0].innerHTML = uniqueDays;
+    // fill in variables in html table
+    $('#median')[0].innerText = `${medianHours} hours, ${medianMinutes} minutes`;
+    $('#busiest')[0].innerText = `${busiest}x: ${busyDays}`;
+    $('#total')[0].innerText = total;
+    $('#active')[0].innerText = uniqueDays;
   }
 }
 
+// triggered on clicking "visualize i"
 charts = () => {
+  // if first time opening modal
   if (charted == false) {
     dayBars();
     monthBars();
@@ -423,18 +473,27 @@ charts = () => {
   }
 }
 
+// triggered on clicking "visualize ii"
 graphs = () => {
+  // if first time opening modal
   if (graphed == false) {
     line(false);
     graphed = true;
   }
+  else { line(true); }
 }
 
-window.onresize = () => { line(true); };
+// automatically triggered on window resize to redraw line graph, if you have the modal open
+window.onresize = () => { if (viewingLine) { line(true); } };
 
+// called by graphs()
 line = (flag) => {
+  // the modal is now open
+  viewingLine = true;
+  // and the line is 67.5% of the screen's width
   const xWidth = window.innerWidth * 0.675;
 
+  // not the first time
   if (flag) { d3.select('#lineGraph').remove(); }
   // first time
   else {
@@ -443,26 +502,36 @@ line = (flag) => {
     let index = 0;
     let zeroes = 0;
 
+    // for each calendar day
     for (let i = 0; i < objs.length; i++) {
       let obj = objs[index];
+      // convert curr day to string
       let date = d.toLocaleString('en-US', { day: 'numeric', month: 'long' });
 
+      // and compare to recorded day
       if (obj.day == date) {
+        // if there's data for that day, record it
         dayLine.push({ day: new Date(d3.timeParse('%B %d')(obj.day).setYear(YEAR)), value: obj.count });
         index++;
       }
+      // if no match, add entry for that day and set count to 0
       else {
         dayLine.push({ day: new Date(d3.timeParse('%B %d')(date).setYear(YEAR)), value: 0 });
         zeroes++;
+        // decrement the counter to keep within bounds of number of unique days
         i--;
       }
+      // look at next calendar day
       d.setDate(d.getDate() + 1);
     }
 
+    // this object is now complete, we've calculated number of days skipped
     dayFreqCounts[0] = zeroes;
+    // so the pie chart can be rendered
     freqPie();
   }
 
+  // time for the line graph
   d3.select('#lineBox')
     .append('svg')
     .attr('id', 'lineGraph')
@@ -472,17 +541,18 @@ line = (flag) => {
   const svg = d3.select('#lineGraph');
 
   const x = d3.scaleTime()
-      .domain(d3.extent(dayLine, (d) => d.day))
-      .rangeRound([3, xWidth - 3]);
+    .domain(d3.extent(dayLine, (d) => d.day))
+    .rangeRound([3, xWidth - 3]);
 
   const y = d3.scaleLinear()
-      .domain(d3.extent(dayLine, (d) => d.value))
-      .rangeRound([122, 3]);
+    .domain(d3.extent(dayLine, (d) => d.value))
+    .rangeRound([122, 3]);
 
   const line = d3.line()
-      .x((d) => x(d.day))
-      .y((d) => y(d.value))
+    .x((d) => x(d.day))
+    .y((d) => y(d.value));
 
+  // append the line!
   svg.append('path')
       .datum(dayLine)
       .attr('fill', 'none')
@@ -490,6 +560,7 @@ line = (flag) => {
       .attr('stroke-width', 1)
       .attr('d', line);
 
+  // append VERY transparent circles at each inflection point on the line graph in order to allow for tooltips
   svg.selectAll('crap')
     .data(dayLine)
     .enter()
@@ -501,16 +572,87 @@ line = (flag) => {
     .attr('r', 3)
     .attr('fill', '#FFFFFF03')
     .on('mouseover', (d) => {
+        // lazily use same tooltip as main scatterplot lol, center above cursor
         d3.select('#tooltip')
            .style('visibility', 'visible')
            .style('left', () => event.pageX - 48.5 + 'px')
            .style('top', () => event.pageY - 100 + 'px');
 
+        // format date label
         const labels = d.target.attributes;
         const labelDate = new Date(labels.x.value);
 
         $('#date').html(`<text>${labels.y.value}x:</text><br><text>${daysForLineChart[labelDate.getDay()]}</text><br><text>${monthsForLineChart[labelDate.getMonth()]}</text><br><text>${labelDate.getDate()}</text>`)})
     .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') });
+}
+
+// called by line()
+freqPie = () => {
+  document.getElementById('pieKey').innerHTML = '<tr><td class="und">freq</td><td class="und">num</td><td class="und">pct</td></tr>';
+
+  // set the color scale
+  const color = d3.scaleOrdinal()
+  .range(['#C9D4D5', '#CCD3E0', '#C5D5EC', '#C4D9D9', '#C8E5E2']);
+
+  let pieChart = d3.select('#dayFreqBarChart')
+  .attr('width', 200)
+  .attr('height', 200)
+  .append('g')
+  .attr('transform', 'translate(100,100)');
+
+  const pie = d3.pie().value(d => d[1]);
+  const data_pie = pie(Object.entries(dayFreqCounts));
+
+  const arcGen = d3.arc().innerRadius(40).outerRadius(75);
+
+  pieChart.selectAll('pies')
+  .data(data_pie)
+  .join('path')
+  .attr('d', d3.arc()
+  .innerRadius(40)
+  .outerRadius(80))
+  .attr('fill', d => color(d.data[0]))
+  .attr('stroke', '#808080')
+  .style('stroke-width', 0.5)
+
+  pieChart.selectAll('slices')
+  .data(data_pie)
+  .join('text')
+  .text(d => d.data[0])
+  .attr('transform', d => `translate(${arcGen.centroid(d)})`)
+  .style('text-anchor', 'middle')
+  .attr('class', 'pieLabels')
+
+  let totalDayFreqCounts = 0;
+  for (day in dayFreqCounts) { totalDayFreqCounts += dayFreqCounts[day]; }
+
+  let sortedDayFreqCounts = [];
+
+  for (day in dayFreqCounts) { sortedDayFreqCounts.push([day, dayFreqCounts[day]]); }
+  sortedDayFreqCounts.sort((a, b) => b[1] - a[1]);
+
+  for (day of sortedDayFreqCounts) {
+    let tr = document.createElement('tr');
+    let d = document.createElement('td');
+    let dd = document.createElement('td');
+    let ddd = document.createElement('td');
+    d.innerText = day[0] + ':';
+
+    let ddLen = day[1].toString().length;
+    if (ddLen == 1) { dd.innerText = '00'.concat(day[1]); }
+    else if (ddLen == 2) { dd.innerText = '0'.concat(day[1]); }
+    else { dd.innerText = day[1]; }
+
+    let dddPercent = (day[1] / totalDayFreqCounts * 100).toFixed(2);
+    let dddLen = dddPercent.length;
+    if (dddLen == 4) { ddd.innerText = '0'.concat(dddPercent) + '%'; }
+    else { ddd.innerText = dddPercent + '%'; }
+
+    tr.appendChild(d);
+    tr.appendChild(dd);
+    tr.appendChild(ddd);
+    document.getElementById('pieKey').appendChild(tr);
+  }
 }
 
 monthBars = () => {
@@ -609,74 +751,6 @@ dayBars = () => {
     .attr('y', (d) => y(d.freq) - 3)
     .attr('fill', '#FFFFFF')
     .text((d) => d.freq)
-}
-
-freqPie = () => {
-  document.getElementById('pieKey').innerHTML = '<tr><td class="und">freq</td><td class="und">num</td><td class="und">pct</td></tr>';
-
-  // set the color scale
-  const color = d3.scaleOrdinal()
-  .range(['#C9D4D5', '#CCD3E0', '#C5D5EC', '#C4D9D9', '#C8E5E2']);
-
-  let pieChart = d3.select('#dayFreqBarChart')
-  .attr('width', 200)
-  .attr('height', 200)
-  .append('g')
-  .attr('transform', 'translate(100,100)');
-
-  const pie = d3.pie().value(d => d[1]);
-  const data_pie = pie(Object.entries(dayFreqCounts));
-
-  const arcGen = d3.arc().innerRadius(40).outerRadius(75);
-
-  pieChart.selectAll('pies')
-  .data(data_pie)
-  .join('path')
-  .attr('d', d3.arc()
-  .innerRadius(40)
-  .outerRadius(80))
-  .attr('fill', d => color(d.data[0]))
-  .attr('stroke', '#808080')
-  .style('stroke-width', 0.5)
-
-  pieChart.selectAll('slices')
-  .data(data_pie)
-  .join('text')
-  .text(d => d.data[0])
-  .attr('transform', d => `translate(${arcGen.centroid(d)})`)
-  .style('text-anchor', 'middle')
-  .attr('class', 'pieLabels')
-
-  let totalDayFreqCounts = 0;
-  for (day in dayFreqCounts) { totalDayFreqCounts += dayFreqCounts[day]; }
-
-  let sortedDayFreqCounts = [];
-
-  for (day in dayFreqCounts) { sortedDayFreqCounts.push([day, dayFreqCounts[day]]); }
-  sortedDayFreqCounts.sort((a, b) => b[1] - a[1]);
-
-  for (day of sortedDayFreqCounts) {
-    let tr = document.createElement('tr');
-    let d = document.createElement('td');
-    let dd = document.createElement('td');
-    let ddd = document.createElement('td');
-    d.innerText = day[0] + ':';
-
-    let ddLen = day[1].toString().length;
-    if (ddLen == 1) { dd.innerText = '00'.concat(day[1]); }
-    else if (ddLen == 2) { dd.innerText = '0'.concat(day[1]); }
-    else { dd.innerText = day[1]; }
-
-    let dddPercent = (day[1] / totalDayFreqCounts * 100).toFixed(2);
-    let dddLen = dddPercent.length;
-    if (dddLen == 4) { ddd.innerText = '0'.concat(dddPercent) + '%'; }
-    else { ddd.innerText = dddPercent + '%'; }
-
-    tr.appendChild(d);
-    tr.appendChild(dd);
-    tr.appendChild(ddd);
-    document.getElementById('pieKey').appendChild(tr);
-  }
 }
 
 blanks = () => {
