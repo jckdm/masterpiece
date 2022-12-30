@@ -7,7 +7,7 @@ Inspired by the idea of a New Year's Resolution, Masterpiece considers data with
 
 ## Philosophy
 
-Masterpiece is also an experiment in recognizing the bias that is implicitly packaged together with self-reporded data. This bias is created in a self-fulfilling prophecy that is inextricable from manual data entry: as time progresses and data is recorded, an individual becomes accustomed to, self-aware of, and eventually hyper-aware of the habit they are tracking. `And what is the relationship between my simultaneous creation of the tool, and the data that feeds it?`
+Masterpiece is also an experiment in recognizing the bias that is implicitly packaged together with self-reported data. This bias is created in a self-fulfilling prophecy that is inextricable from manual data entry: as time progresses and data is recorded, an individual becomes accustomed to, self-aware of, and eventually hyper-aware of the habit they are tracking. `And what is the relationship between my simultaneous creation of the tool, and the data that feeds it?`
 
 The effect is almost Pavlovian as the feeling of performing a habit becomes a necessary precursor to the feeling of recording that habit as data. By extension, it is not unreasonable to think that the order of events might flip: `could an individual perform a habit for the pleasure of recording it?` `Might an individual avoid performing a habit in order to modify the data to their liking?` Perhaps it is inevitable that as we become closer with our data, we become farther from ourselves.
 

@@ -1,11 +1,11 @@
-// triggered on clicking "process sample data"
+// triggered on clicking 'process sample data'
 // just a shell function
 run = () => {
   appendData(filteredPieces);
   $('#modalStart')[0].style.display = 'none';
 }
 
-// triggered on clicking the "data"
+// triggered on clicking the 'data'
 upload = () => {
   $('#modalUpload')[0].style.display = 'block';
 
@@ -23,31 +23,31 @@ upload = () => {
   }
 }
 
-// triggered on clicking "parse file"
+// triggered on clicking 'parse file'
 parseUploadedFile = () => {
   // clear prev errors
-  $('#uploadError')[0].innerText = "";
+  $('#uploadError')[0].innerText = '';
   let fileList = $('#uploadedFile')[0].files;
 
   // did you even upload a file
   if (fileList.length < 1) {
-    $('#uploadError')[0].innerText = "No file uploaded."
+    $('#uploadError')[0].innerText = 'No file uploaded.'
   }
 
   const file = fileList[0];
 
   // file must be .cvs
   if (file.name.split('.')[1] != 'csv') {
-    $('#uploadError')[0].innerText = "Incorrect file type."
+    $('#uploadError')[0].innerText = 'Incorrect file type.'
   }
 
   $.ajax({
-    type: "GET",
+    type: 'GET',
     url: file.name,
     success: (data) => {
       // check headers
       if (data.slice(0, 26) != 'Month,Day,Date,Hour,Minute') {
-        $('#uploadError')[0].innerText = "Incorrect column headers."
+        $('#uploadError')[0].innerText = 'Incorrect column headers.'
       }
       else {
         // remove main svg and reset all adjustable fields
@@ -112,7 +112,7 @@ parseUploadedFile = () => {
   });
 }
 
-// triggered on clicking "color"
+// triggered on clicking 'color'
 toggleColor = () => {
   // make all circles white
   if (colored) { d3.selectAll('circle').style('fill', '#FFFFFF'); }
@@ -238,18 +238,14 @@ scale = (flag = false) => {
   // set all month bars to white
   if (monthBars.length > 0) {
     for (bar of monthBars) {
-      if (bar.nodeName == 'rect') {
-        bar.attributes.fill.value = '#FFFFFF'
-      }
+      if (bar.nodeName == 'rect') { bar.attributes.fill.value = '#FFFFFF'; }
     }
   }
   // set all day bars to white
   let dayBars = $('#dayBar')[0].children;
   if (dayBars.length > 0) {
     for (bar of dayBars) {
-      if (bar.nodeName == 'rect') {
-        bar.attributes.fill.value = '#FFFFFF'
-      }
+      if (bar.nodeName == 'rect') { bar.attributes.fill.value = '#FFFFFF'; }
     }
   }
 
@@ -350,8 +346,8 @@ scale = (flag = false) => {
 
   // vertical gridlines
   d3.select('#main').append('g')
-     .attr('class', 'gridH')
-     .call(hGridlines);
+    .attr('class', 'gridH')
+    .call(hGridlines);
 
   d3.select('#main').append('g')
     .attr('class', 'yaxis')
@@ -362,37 +358,37 @@ scale = (flag = false) => {
   if (flag) { appendData(filteredPieces); }
 }
 
-// triggered on clicking "process sample data" && called at the end of scale()
+// triggered on clicking 'process sample data' && called at the end of scale()
 appendData = (filteredPieces) => {
   // append tooltip
   d3.select('body').append('div').attr('id', 'tooltip');
 
   // append data!
   d3.select('#main').selectAll('circle')
-     .data(filteredPieces)
-     .enter()
-     .append('circle')
-     .attr('cx', (d) => xScale(d.x))
-     .attr('cy', (d) => yScale(d.y))
-     .attr('stroke', 'black')
-     .attr('stroke-width', '1')
-     .attr('id', (d) => `_${d.index}`)
-     .attr('fill', (d) => colors[d.month])
-     .attr('r', 5)
-     .text((d) => d)
-     .on('mouseover', (d) => {
+    .data(filteredPieces)
+    .enter()
+    .append('circle')
+    .attr('cx', (d) => xScale(d.x))
+    .attr('cy', (d) => yScale(d.y))
+    .attr('stroke', '#000000')
+    .attr('stroke-width', '1')
+    .attr('id', (d) => `_${d.index}`)
+    .attr('fill', (d) => colors[d.month])
+    .attr('r', 5)
+    .text((d) => d)
+    .on('mouseover', (d) => {
 
-       // bound tooltip by edges of scatterplot
-       d3.select('#tooltip')
-          .style('visibility', 'visible')
-          .style('left', () => {
-            if (d.x < 100) { return (event.pageX + 'px'); }
-            else { return (event.pageX - 48.5 + 'px'); }
-          })
-          .style('top', () => {
-            if (d.y < 150) { return (event.pageY + 25 + 'px'); }
-            else { return (event.pageY - 100 + 'px'); }
-          })
+     // bound tooltip by edges of scatterplot
+     d3.select('#tooltip')
+       .style('visibility', 'visible')
+       .style('left', () => {
+         if (d.x < 100) { return (event.pageX + 'px'); }
+         else { return (event.pageX - 48.5 + 'px'); }
+       })
+       .style('top', () => {
+         if (d.y < 150) { return (event.pageY + 25 + 'px'); }
+         else { return (event.pageY - 100 + 'px'); }
+       })
 
       // format date for tooltip
       const dt = (d.target.__data__);
@@ -401,19 +397,21 @@ appendData = (filteredPieces) => {
       const minute = dt.minute.toString().length == 1 ? '0'.concat(dt.minute) : dt.minute;
 
       $('#date').html(`<text>${dt.day}</text><br><text>${dt.month} ${dt.date}</text><br><text>${hour}:${minute}</text>`);
+    })
+    .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') });
 
-     })
-     .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') })
-
-     // count how many days was the action performend a given number of times
-     for (obj of objs) {
-       let c = obj.count;
-       if (c in dayFreqCounts) { dayFreqCounts[c] += 1; }
-       else { dayFreqCounts[c] = 1; }
-     }
+    // only calculate when dict is empty
+    if (Object.keys(dayFreqCounts).length == 0) {
+      // count how many days was the action performend a given number of times
+      for (obj of objs) {
+        let c = obj.count;
+        if (c in dayFreqCounts) { dayFreqCounts[c] += 1; }
+        else { dayFreqCounts[c] = 1; }
+      }
+    }
 }
 
-// triggered on clicking "count"
+// triggered on clicking 'count'
 analyze = () => {
   // if first time opening modal
   if (analyzed == false) {
@@ -463,7 +461,7 @@ analyze = () => {
   }
 }
 
-// triggered on clicking "visualize i"
+// triggered on clicking 'visualize i'
 charts = () => {
   // if first time opening modal
   if (charted == false) {
@@ -473,7 +471,7 @@ charts = () => {
   }
 }
 
-// triggered on clicking "visualize ii"
+// triggered on clicking 'visualize ii'
 graphs = () => {
   // if first time opening modal
   if (graphed == false) {
@@ -540,25 +538,17 @@ line = (flag) => {
 
   const svg = d3.select('#lineGraph');
 
-  const x = d3.scaleTime()
-    .domain(d3.extent(dayLine, (d) => d.day))
-    .rangeRound([3, xWidth - 3]);
-
-  const y = d3.scaleLinear()
-    .domain(d3.extent(dayLine, (d) => d.value))
-    .rangeRound([122, 3]);
-
-  const line = d3.line()
-    .x((d) => x(d.day))
-    .y((d) => y(d.value));
+  const x = d3.scaleTime().domain(d3.extent(dayLine, (d) => d.day)).rangeRound([3, xWidth - 3]);
+  const y = d3.scaleLinear().domain(d3.extent(dayLine, (d) => d.value)).rangeRound([122, 3]);
+  const line = d3.line().x((d) => x(d.day)).y((d) => y(d.value));
 
   // append the line!
   svg.append('path')
-      .datum(dayLine)
-      .attr('fill', 'none')
-      .attr('stroke', 'white')
-      .attr('stroke-width', 1)
-      .attr('d', line);
+    .datum(dayLine)
+    .attr('fill', 'none')
+    .attr('stroke', '#FFFFFF')
+    .attr('stroke-width', 1)
+    .attr('d', line);
 
   // append VERY transparent circles at each inflection point on the line graph in order to allow for tooltips
   svg.selectAll('crap')
@@ -572,81 +562,108 @@ line = (flag) => {
     .attr('r', 3)
     .attr('fill', '#FFFFFF03')
     .on('mouseover', (d) => {
-        // lazily use same tooltip as main scatterplot lol, center above cursor
-        d3.select('#tooltip')
-           .style('visibility', 'visible')
-           .style('left', () => event.pageX - 48.5 + 'px')
-           .style('top', () => event.pageY - 100 + 'px');
+      // lazily use same tooltip as main scatterplot lol, center above cursor
+      d3.select('#tooltip')
+        .style('visibility', 'visible')
+        .style('left', () => event.pageX - 48.5 + 'px')
+        .style('top', () => event.pageY - 100 + 'px');
 
         // format date label
         const labels = d.target.attributes;
         const labelDate = new Date(labels.x.value);
 
-        $('#date').html(`<text>${labels.y.value}x:</text><br><text>${daysForLineChart[labelDate.getDay()]}</text><br><text>${monthsForLineChart[labelDate.getMonth()]}</text><br><text>${labelDate.getDate()}</text>`)})
+        $('#date').html(`<text>${labels.y.value}x:</text><br><text>${daysForLineChart[labelDate.getDay()]}</text><br><text>${monthsForLineChart[labelDate.getMonth()]}</text><br><text>${labelDate.getDate()}</text>`);
+    })
     .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') });
 }
 
 // called by line()
 freqPie = () => {
+  // set column headers in key
   document.getElementById('pieKey').innerHTML = '<tr><td class="und">freq</td><td class="und">num</td><td class="und">pct</td></tr>';
 
+  // TODO : what if they were all just gray lol
   // set the color scale
-  const color = d3.scaleOrdinal()
-  .range(['#C9D4D5', '#CCD3E0', '#C5D5EC', '#C4D9D9', '#C8E5E2']);
+  // const color = d3.scaleOrdinal().range(['#C9D4D5', '#CCD3E0', '#C5D5EC', '#C4D9D9', '#C8E5E2']);
 
-  let pieChart = d3.select('#dayFreqBarChart')
-  .attr('width', 200)
-  .attr('height', 200)
-  .append('g')
-  .attr('transform', 'translate(100,100)');
+  const pieChart = d3.select('#dayFreqBarChart')
+    .attr('width', 200)
+    .attr('height', 200)
+    .append('g')
+    .attr('transform', 'translate(100,100)');
 
   const pie = d3.pie().value(d => d[1]);
   const data_pie = pie(Object.entries(dayFreqCounts));
-
   const arcGen = d3.arc().innerRadius(40).outerRadius(75);
 
   pieChart.selectAll('pies')
-  .data(data_pie)
-  .join('path')
-  .attr('d', d3.arc()
-  .innerRadius(40)
-  .outerRadius(80))
-  .attr('fill', d => color(d.data[0]))
-  .attr('stroke', '#808080')
-  .style('stroke-width', 0.5)
+    .data(data_pie)
+    .join('path')
+    .attr('d', d3.arc()
+    .innerRadius(40)
+    .outerRadius(80))
+    .attr('fill', '#C9D4D5')
+    .attr('stroke', '#808080')
+    .style('stroke-width', 1)
+    // highlight segment and associated row label
+    .on('mouseover', d => {
+      d.srcElement.attributes.stroke.value = '#008AD8';
+      d.srcElement.style['stroke-width'] = '2px';
+
+      const row = document.getElementsByClassName(`_${d.srcElement.__data__.data[0]}x`);
+      for (col of row) { col.style.color = '#008AD8'; }
+    })
+    // un-highlight
+    .on('mouseout', d => {
+      d.srcElement.attributes.stroke.value = '#808080';
+      d.srcElement.style['stroke-width'] = '1px';
+
+      const row = document.getElementsByClassName(`_${d.srcElement.__data__.data[0]}x`);
+      for (col of row) { col.style.color = '#FFFFFF'; }
+    });
 
   pieChart.selectAll('slices')
-  .data(data_pie)
-  .join('text')
-  .text(d => d.data[0])
-  .attr('transform', d => `translate(${arcGen.centroid(d)})`)
-  .style('text-anchor', 'middle')
-  .attr('class', 'pieLabels')
+    .data(data_pie)
+    .join('text')
+    .text(d => d.data[0])
+    .attr('transform', d => `translate(${arcGen.centroid(d)})`)
+    .style('text-anchor', 'middle')
+    .attr('class', 'pieLabels')
 
+  // sum total counts per frequency
   let totalDayFreqCounts = 0;
   for (day in dayFreqCounts) { totalDayFreqCounts += dayFreqCounts[day]; }
 
+  // sort descending by total num of occurrences per day
   let sortedDayFreqCounts = [];
-
   for (day in dayFreqCounts) { sortedDayFreqCounts.push([day, dayFreqCounts[day]]); }
   sortedDayFreqCounts.sort((a, b) => b[1] - a[1]);
 
+  // create 3 cols for key
   for (day of sortedDayFreqCounts) {
     let tr = document.createElement('tr');
     let d = document.createElement('td');
     let dd = document.createElement('td');
     let ddd = document.createElement('td');
-    d.innerText = day[0] + ':';
 
+    // col 1: freq
+    d.innerText = day[0] + ':';
+    d.setAttribute('class', `_${day[0]}x`);
+
+    // col 2: num
+    // align by adding leading zeroes
     let ddLen = day[1].toString().length;
     if (ddLen == 1) { dd.innerText = '00'.concat(day[1]); }
     else if (ddLen == 2) { dd.innerText = '0'.concat(day[1]); }
     else { dd.innerText = day[1]; }
+    dd.setAttribute('class', `_${day[0]}x`);
 
+    // col 3: percent
     let dddPercent = (day[1] / totalDayFreqCounts * 100).toFixed(2);
     let dddLen = dddPercent.length;
     if (dddLen == 4) { ddd.innerText = '0'.concat(dddPercent) + '%'; }
     else { ddd.innerText = dddPercent + '%'; }
+    ddd.setAttribute('class', `_${day[0]}x`);
 
     tr.appendChild(d);
     tr.appendChild(dd);
@@ -655,75 +672,20 @@ freqPie = () => {
   }
 }
 
-monthBars = () => {
-  let bars = d3.select('#monthBar');
-
-  let x = d3.scaleBand()
-    .range([0, 300])
-    .domain(monthFreqs.map((d) => d.month))
-    .padding(0.25);
-
-  bars.append('g')
-    .call(d3.axisBottom(x))
-    .selectAll('text')
-    .attr("transform", "translate(-13,10)rotate(-90)")
-    .style("text-anchor", "end");
-
-  let y = d3.scaleLinear()
-    .range([130, 0])
-    .domain([0, 130]);
-
-  bars.append('g')
-    .call(d3.axisLeft(y));
-
-  // bars
-  bars.selectAll('bar')
-    .data(monthFreqs)
-    .enter()
-    .append('rect')
-    .attr('id', (d) => d.month)
-    .attr('x', (d) => x(d.month))
-    .attr('y', (d) => y(d.freq))
-    .attr('width', x.bandwidth())
-    .attr('height', (d) => 150 - y(d.freq))
-    .attr('fill', '#FFFFFF')
-
-  if (monthSelected != 'Year') {
-    document.getElementById(monthSelected).attributes.fill.value = '#808080';
-  }
-
-  // labels
-  bars.selectAll('bar')
-    .data(monthFreqs)
-    .enter()
-    .append('text')
-    .attr('x', (d) => x(d.month) + (x.bandwidth() / 6))
-    .attr('class', 'barLabels')
-    .attr('y', (d) => y(d.freq) - 3)
-    .attr('fill', '#FFFFFF')
-    .text((d) => d.freq)
-}
-
+// called by charts()
 dayBars = () => {
-  let bars = d3.select('#dayBar');
+  const bars = d3.select('#dayBar');
 
-  let x = d3.scaleBand()
-    .range([0, 300])
-    .domain(dayFreqs.map((d) => d.day))
-    .padding(0.25);
+  const x = d3.scaleBand().range([0, 300]).domain(dayFreqs.map((d) => d.day)).padding(0.25);
 
   bars.append('g')
     .call(d3.axisBottom(x))
     .selectAll('text')
-    .attr("transform", "translate(-13,10)rotate(-90)")
-    .style("text-anchor", "end");
+    .attr('transform', 'translate(-13,10)rotate(-90)')
+    .style('text-anchor', 'end');
 
-  let y = d3.scaleLinear()
-    .range([160, 0])
-    .domain([0, 160]);
-
-  bars.append('g')
-    .call(d3.axisLeft(y));
+  const y = d3.scaleLinear().range([160, 0]).domain([0, 160]);
+  bars.append('g').call(d3.axisLeft(y));
 
   // bars
   bars.selectAll('bar')
@@ -737,6 +699,7 @@ dayBars = () => {
     .attr('height', (d) => 150 - y(d.freq))
     .attr('fill', '#FFFFFF')
 
+  // highlight selected day, if applicable
   if (daySelected != 'Week') {
     document.getElementById(daySelected).attributes.fill.value = '#808080';
   }
@@ -753,12 +716,217 @@ dayBars = () => {
     .text((d) => d.freq)
 }
 
+// called by charts()
+monthBars = () => {
+  const bars = d3.select('#monthBar');
+
+  const x = d3.scaleBand().range([0, 300]).domain(monthFreqs.map((d) => d.month)).padding(0.25);
+
+  bars.append('g')
+    .call(d3.axisBottom(x))
+    .selectAll('text')
+    .attr('transform', 'translate(-13,10)rotate(-90)')
+    .style('text-anchor', 'end');
+
+  const y = d3.scaleLinear().range([130, 0]).domain([0, 130]);
+  bars.append('g').call(d3.axisLeft(y));
+
+  // bars
+  bars.selectAll('bar')
+    .data(monthFreqs)
+    .enter()
+    .append('rect')
+    .attr('id', (d) => d.month)
+    .attr('x', (d) => x(d.month))
+    .attr('y', (d) => y(d.freq))
+    .attr('width', x.bandwidth())
+    .attr('height', (d) => 150 - y(d.freq))
+    .attr('fill', '#FFFFFF')
+
+  // highlight selected month, if applicable
+  if (monthSelected != 'Year') {
+    document.getElementById(monthSelected).attributes.fill.value = '#808080';
+  }
+
+  // labels
+  bars.selectAll('bar')
+    .data(monthFreqs)
+    .enter()
+    .append('text')
+    .attr('x', (d) => x(d.month) + (x.bandwidth() / 6))
+    .attr('class', 'barLabels')
+    .attr('y', (d) => y(d.freq) - 3)
+    .attr('fill', '#FFFFFF')
+    .text((d) => d.freq)
+}
+
+// triggered by sliding 'Busiest Ranges' input on 'analyze' modal
+sliderVal = () => {
+  // clear and reset
+  document.getElementById('verticalSpans').innerHTML = '';
+  const val = parseInt(document.getElementById('vmins').value);
+  document.getElementById('labelvmins').innerHTML = `${val} minutes`;
+
+  // reset all cirlces
+  d3.selectAll('circle').style('opacity', 1.0);
+
+  const vals = {};
+
+  // make copies so as to not overwrite source data
+  const piecesCopy = [];
+  let piecesCopyCopy = [];
+  piecesCopy.push.apply(piecesCopy, pieces);
+  piecesCopyCopy.push.apply(piecesCopyCopy, pieces);
+
+  for (p1 of piecesCopyCopy) {
+    for (p2 of piecesCopy) {
+      // keep track of which points have already been added
+      let added = false;
+      // if p2 is within the range of [p1 - val/2, p1, p1 + val/2]
+      // aka: p1 is the middle of the range
+      if (p2.x >= (p1.x - (val / 2)) && p2.x <= (p1.x + (val / 2))) {
+        let key = `_${p1.x}_mid`;
+        // add to array of points that fall within range
+        if (vals[key]) { vals[key].push(p2); }
+        else { vals[key] = [p2]; }
+        added = true;
+      }
+      // if slider = 0, these two calculations won't work
+      if (val != 0) {
+        // if p2 is within the range [p1, p1 + val]
+        // aka: p1 is the start of the range
+        if (p1.x - p2.x <= val && p1.x - p2.x >= 0) {
+          let key = `_${p1.x}_start`;
+          if (vals[key]) { vals[key].push(p2); }
+          else { vals[key] = [p2]; }
+          added = true;
+        }
+        // if p2 is within the range [p1 - val, p1]
+        // aka: p1 is the end of the range
+        if (p1.x - p2.x >= -val && p1.x - p2.x <= 0) {
+          let key = `_${p1.x}_end`;
+          if (vals[key]) { vals[key].push(p2); }
+          else { vals[key] = [p2]; }
+          added = true;
+        }
+      }
+      // if p2 fell within a range, remove it from the list of points
+      if (added) { piecesCopy.splice(piecesCopy.indexOf(p2), 1); }
+    }
+  }
+
+  let largestVert = 0;
+
+  // loop through all ranges
+  for (v in vals) {
+    let currV = vals[v];
+    let l = currV.length;
+    // find range with largest number of points
+    if (l > largestVert) {
+      let minX = BIGX;
+      let maxX = -1;
+      // identify full range of points, [minX, maxX]
+      for (p in currV) {
+        if (currV[p].x < minX) { minX = currV[p].x; }
+        if (currV[p].x > maxX) { maxX = currV[p].x; }
+      }
+      // ensure the range identified actually equals the range selected via slider
+      if (maxX - minX == val) { largestVert = l; }
+    }
+  }
+
+  // gray out all circles, remove prev ranges
+  d3.selectAll('circle').style('opacity', 0.25);
+  d3.selectAll('.verticals').remove();
+
+  xScale = d3.scaleLinear().domain([0, BIGX]).range([padding, w - 15]);
+
+  const ranges = [];
+
+  // with maximum identified, loop through again
+  for (v in vals) {
+    // if range has max number of points
+    if (vals[v].length == largestVert) {
+      let minX = BIGX;
+      let maxX = -1;
+      // again identify [minX, maxX] range
+      for (p of vals[v]) {
+        if (p.x < minX) { minX = p.x; }
+        if (p.x > maxX) { maxX = p.x; }
+      }
+      // still necessary: there could be incorrectly-sized ranges with the max as well
+      if (maxX - minX == val) { ranges.push([minX, maxX, vals[v].length]); }
+      else { delete vals[v]; }
+    }
+    // remove all other ranges
+    else { delete vals[v]; }
+  }
+
+  // if there even ARE any ranges to display
+  if (ranges.length > 0) {
+    // apology for this slop: randomly selecting a G that's behind the data...
+    // so that the highlighted points can be hovered on
+    d3.select('.gridV')
+      .selectAll('rect')
+      .data(ranges)
+      .enter()
+      .append('rect')
+      // needs to encompass the entire circle
+      .attr('x', (d) => xScale(d[0]) - 5)
+      .attr('y', padding)
+      .attr('height', h - padding - padding)
+      // wider to account for full width of circle
+      .attr('width', (d) => xScale(d[1]) - xScale(d[0]) + 10)
+      .attr('class', 'verticals')
+      .style('fill', '#FFFFFF')
+      .style('opacity', 0.1);
+
+    ranges.sort((a, b) => a[0] - b[0]);
+
+    // calculate day, hours, minutes of ranges
+    for (r of ranges) {
+      let startDay = daysForVerticals[Math.floor((r[0] / 60) / 24)];
+      let endDay = daysForVerticals[Math.floor((r[1] / 60) / 24)]
+
+      let num24sStart = Math.floor((r[0] / 60) / 24) * 24;
+      let num24sEnd = Math.floor((r[1] / 60) / 24) * 24;
+
+      let startHours = Math.floor(r[0] / 60) - num24sStart;
+      let endHours = Math.floor(r[1] / 60) - num24sEnd;
+
+      let startMinutes = r[0] - (60 * startHours) - (num24sStart * 60);
+      let endMinutes = r[1] - (60 * endHours) - (num24sEnd * 60);
+
+      // add zeroes for alignment
+      const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
+      const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
+      const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
+      const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
+
+      // format text and display in modal
+      let p = document.createElement('p');
+      p.innerText = `${r[2]}x: ${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
+      document.getElementById('verticalSpans').appendChild(p);
+    }
+
+    // highlight only points in displayed ranges
+    for (v in vals) {
+      for (p of vals[v]) {
+        document.getElementById(`_${p.index}`).style.opacity = 1;
+      }
+    }
+  }
+}
+
+// triggered by sliding 'Longest Interstices' input on 'analyze' modal
 blanks = () => {
+  // clear and reset
   document.getElementById('verticalBlanks').innerHTML = '';
   const val = parseInt(document.getElementById('blank').value);
   document.getElementById('labelBlank').innerHTML = `>= ${val}th pctl.`;
 
   const blankKeys = {};
+  // create unique list of sorted x values, bc any point could be the start of a gap
   for (piece of pieces) { blankKeys[piece.x] = piece.x; }
   const blanks = Object.values(blankKeys).sort((a, b) => a - b);
   const numBlankKeys = blanks.length;
@@ -766,30 +934,37 @@ blanks = () => {
   let blankSpans = [];
   let longestBlank = 0;
 
+  // calculate all gaps, find longest gap between two x's
   for (let i = 0; i < numBlankKeys - 1; i++) {
     let blankGap = blanks[i + 1] - blanks[i];
     blankSpans.push(blankGap);
     if (blankGap > longestBlank) { longestBlank = blankGap; }
   }
 
+  // manually calculate final gap (btw last point and first point, sun -> mon)
   const lastBlankGap = blanks[0] + (BIGX - blanks[numBlankKeys - 1]);
   blankSpans.push(lastBlankGap);
   if (lastBlankGap > longestBlank) { longestBlank = blankGap; }
 
+  // remove dups
   blankSpans = blankSpans.filter((item, index) => blankSpans.indexOf(item) === index);
   blankSpans.sort((a, b) => a - b);
 
+  // identify threshold (value above which to consider) using selected percentile
   const threshold = blankSpans[Math.floor((val / 100) * blankSpans.length) - 1];
 
   let longestSpans = [];
 
+  // identify gaps above threshold
   for (let i = 0; i < numBlankKeys; i++) {
     let blankGap = blanks[i + 1] - blanks[i];
     if (blankGap >= threshold) { longestSpans.push([blanks[i], blanks[i + 1]]); }
   }
 
+  // remoev prev gaps
   d3.selectAll('.blanks').remove();
 
+  // if there are gaps to display
   if (longestSpans.length > 0) {
     // more slop
     d3.select('.gridH')
@@ -797,6 +972,7 @@ blanks = () => {
       .data(longestSpans)
       .enter()
       .append('rect')
+      // again, account for width of circle
       .attr('x', (d) => xScale(d[0]) + 5)
       .attr('y', padding)
       .attr('height', h - padding - padding)
@@ -805,6 +981,7 @@ blanks = () => {
       .style('fill', '#008AD8')
       .style('opacity', 0.1);
 
+    // calculate day, hours, minutes of gaps
     for (span of longestSpans) {
       let startDay = daysForVerticals[Math.floor((span[0] / 60) / 24)];
       let endDay = daysForVerticals[Math.floor((span[1] / 60) / 24)]
@@ -823,6 +1000,7 @@ blanks = () => {
       const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
       const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
 
+      // format text and display in modal
       let p = document.createElement('p');
       p.innerText = `${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
       document.getElementById('verticalBlanks').appendChild(p);
@@ -830,141 +1008,15 @@ blanks = () => {
   }
 }
 
-sliderVal = () => {
-  document.getElementById('verticalSpans').innerHTML = '';
-  const val = parseInt(document.getElementById('vmins').value);
-  document.getElementById('labelvmins').innerHTML = `${val} minutes`;
-
-  d3.selectAll('circle').style('opacity', 1.0);
-
-  const vals = {};
-
-  const piecesCopy = [];
-  let piecesCopyCopy = [];
-  piecesCopy.push.apply(piecesCopy, pieces);
-  piecesCopyCopy.push.apply(piecesCopyCopy, pieces);
-
-  for (p1 of piecesCopyCopy) {
-    for (p2 of piecesCopy) {
-      let added = false;
-      if (p2.x >= (p1.x - (val / 2)) && p2.x <= (p1.x + (val / 2))) {
-        let key = `_${p1.x}_mid`;
-        if (vals[key]) { vals[key].push(p2); }
-        else { vals[key] = [p2]; }
-        added = true;
-      }
-      if (val != 0) {
-        if (p1.x - p2.x <= val && p1.x - p2.x >= 0) {
-          let key = `_${p1.x}_start`;
-          if (vals[key]) { vals[key].push(p2); }
-          else { vals[key] = [p2]; }
-          added = true;
-        }
-        if (p1.x - p2.x >= -val && p1.x - p2.x <= 0) {
-          let key = `_${p1.x}_end`;
-          if (vals[key]) { vals[key].push(p2); }
-          else { vals[key] = [p2]; }
-          added = true;
-        }
-      }
-      if (added) { piecesCopy.splice(piecesCopy.indexOf(p2), 1); }
-    }
-  }
-
-  let largestVert = 0;
-
-  for (v in vals) {
-    let currV = vals[v];
-    let l = currV.length;
-    if (l > largestVert) {
-      let minX = BIGX;
-      let maxX = -1;
-      for (p in currV) {
-        if (currV[p].x < minX) { minX = currV[p].x; }
-        if (currV[p].x > maxX) { maxX = currV[p].x; }
-      }
-      if (maxX - minX == val) { largestVert = l; }
-    }
-  }
-
-  d3.selectAll('circle').style('opacity', 0.25);
-  d3.selectAll('.verticals').remove();
-
-  xScale = d3.scaleLinear().domain([0, BIGX]).range([padding, w - 15]);
-
-  const ranges = [];
-
-  for (v in vals) {
-    if (vals[v].length == largestVert) {
-      let minX = BIGX;
-      let maxX = -1;
-      for (p of vals[v]) {
-        if (p.x < minX) { minX = p.x; }
-        if (p.x > maxX) { maxX = p.x; }
-      }
-      // still necessary: there could be incorrectly-sized ranges with the max as well
-      if (maxX - minX == val) { ranges.push([minX, maxX, vals[v].length]); }
-      else { delete vals[v]; }
-    }
-    else { delete vals[v]; }
-  }
-
-  if (ranges.length > 0) {
-    // apology for this slop: randomly selecting a G that's behind the data...
-    // so that the highlighted points can be hovered on
-    d3.select('.gridV')
-      .selectAll('rect')
-      .data(ranges)
-      .enter()
-      .append('rect')
-      .attr('x', (d) => xScale(d[0]) - 5)
-      .attr('y', padding)
-      .attr('height', h - padding - padding)
-      .attr('width', (d) => xScale(d[1]) - xScale(d[0]) + 10)
-      .attr('class', 'verticals')
-      .style('fill', 'white')
-      .style('opacity', 0.1);
-
-    ranges.sort((a, b) => a[0] - b[0]);
-
-    for (r of ranges) {
-      let startDay = daysForVerticals[Math.floor((r[0] / 60) / 24)];
-      let endDay = daysForVerticals[Math.floor((r[1] / 60) / 24)]
-
-      let num24sStart = Math.floor((r[0] / 60) / 24) * 24;
-      let num24sEnd = Math.floor((r[1] / 60) / 24) * 24;
-
-      let startHours = Math.floor(r[0] / 60) - num24sStart;
-      let endHours = Math.floor(r[1] / 60) - num24sEnd;
-
-      let startMinutes = r[0] - (60 * startHours) - (num24sStart * 60);
-      let endMinutes = r[1] - (60 * endHours) - (num24sEnd * 60);
-
-      const displayStartHours = startHours.toString().length == 1 ? '0'.concat(startHours) : startHours;
-      const displayEndHours = endHours.toString().length == 1 ? '0'.concat(endHours) : endHours;
-      const displayStartMinutes = startMinutes.toString().length == 1 ? '0'.concat(startMinutes) : startMinutes;
-      const displayEndMinutes = endMinutes.toString().length == 1 ? '0'.concat(endMinutes) : endMinutes;
-
-      let p = document.createElement('p');
-      p.innerText = `${r[2]}x: ${startDay} ${displayStartHours}:${displayStartMinutes} – ${endDay} ${displayEndHours}:${displayEndMinutes}\n`;
-      document.getElementById('verticalSpans').appendChild(p);
-    }
-
-    for (v in vals) {
-      for (p of vals[v]) {
-        document.getElementById(`_${p.index}`).style.opacity = 1;
-      }
-    }
-  }
-}
-
+// triggered by clicking 'clear ranges'
 clearVerticals = () => {
+  // reset all circles, remove prev ranges,
   d3.selectAll('circle').style('opacity', 1.0);
   d3.selectAll('.verticals').remove();
-  $('#modalVerticals')[0].style.display = 'none';
 }
 
+// triggered by clicking 'clear gaps'
 clearBlanks = () => {
+  // remove all prev ranges
   d3.selectAll('.blanks').remove();
-  $('#modalVerticals')[0].style.display = 'none';
 }

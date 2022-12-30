@@ -7,7 +7,10 @@ select, button { height: 25px; }
 
 a, a:visited { color: #008AD8; }
 
-form { position: fixed; }
+form {
+  position: fixed;
+  height: 25px;
+}
 
 .gridV, .gridH line { color: #555555; }
 
