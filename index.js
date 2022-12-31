@@ -562,6 +562,8 @@ line = (flag) => {
     .attr('r', 3)
     .attr('fill', '#FFFFFF03')
     .on('mouseover', (d) => {
+      d.srcElement.attributes.fill.value = '#008AD8';
+
       // lazily use same tooltip as main scatterplot lol, center above cursor
       d3.select('#tooltip')
         .style('visibility', 'visible')
@@ -574,7 +576,11 @@ line = (flag) => {
 
         $('#date').html(`<text>${labels.y.value}x:</text><br><text>${daysForLineChart[labelDate.getDay()]}</text><br><text>${monthsForLineChart[labelDate.getMonth()]}</text><br><text>${labelDate.getDate()}</text>`);
     })
-    .on('mouseout', () => { d3.select('#tooltip').style('visibility', 'hidden') });
+    .on('mouseout', (d) => {
+      d.srcElement.attributes.fill.value = '#FFFFFF03';
+
+      d3.select('#tooltip').style('visibility', 'hidden');
+    });
 }
 
 // called by line()
@@ -582,17 +588,13 @@ freqPie = () => {
   // set column headers in key
   document.getElementById('pieKey').innerHTML = '<tr><td class="und">freq</td><td class="und">num</td><td class="und">pct</td></tr>';
 
-  // TODO : what if they were all just gray lol
-  // set the color scale
-  // const color = d3.scaleOrdinal().range(['#C9D4D5', '#CCD3E0', '#C5D5EC', '#C4D9D9', '#C8E5E2']);
-
   const pieChart = d3.select('#dayFreqBarChart')
     .attr('width', 200)
     .attr('height', 200)
     .append('g')
     .attr('transform', 'translate(100,100)');
 
-  const pie = d3.pie().value(d => d[1]);
+  const pie = d3.pie().value((d) => d[1]);
   const data_pie = pie(Object.entries(dayFreqCounts));
   const arcGen = d3.arc().innerRadius(40).outerRadius(75);
 
@@ -606,7 +608,7 @@ freqPie = () => {
     .attr('stroke', '#808080')
     .style('stroke-width', 1)
     // highlight segment and associated row label
-    .on('mouseover', d => {
+    .on('mouseover', (d) => {
       d.srcElement.attributes.stroke.value = '#008AD8';
       d.srcElement.style['stroke-width'] = '2px';
 
@@ -614,7 +616,7 @@ freqPie = () => {
       for (col of row) { col.style.color = '#008AD8'; }
     })
     // un-highlight
-    .on('mouseout', d => {
+    .on('mouseout', (d) => {
       d.srcElement.attributes.stroke.value = '#808080';
       d.srcElement.style['stroke-width'] = '1px';
 
@@ -625,8 +627,8 @@ freqPie = () => {
   pieChart.selectAll('slices')
     .data(data_pie)
     .join('text')
-    .text(d => d.data[0])
-    .attr('transform', d => `translate(${arcGen.centroid(d)})`)
+    .text((d) => d.data[0])
+    .attr('transform', (d) => `translate(${arcGen.centroid(d)})`)
     .style('text-anchor', 'middle')
     .attr('class', 'pieLabels')
 
@@ -1013,10 +1015,20 @@ clearVerticals = () => {
   // reset all circles, remove prev ranges,
   d3.selectAll('circle').style('opacity', 1.0);
   d3.selectAll('.verticals').remove();
+
+  // clear and reset
+  document.getElementById('verticalSpans').innerHTML = '';
+  document.getElementById('vmins').value = 60;
+  document.getElementById('labelvmins').innerHTML = '60 minutes';
 }
 
 // triggered by clicking 'clear gaps'
 clearBlanks = () => {
   // remove all prev ranges
   d3.selectAll('.blanks').remove();
+
+  // clear and reset
+  document.getElementById('verticalBlanks').innerHTML = '';
+  document.getElementById('blank').value = 75;
+  document.getElementById('labelBlank').innerHTML = '>= 75th pctl.';
 }
