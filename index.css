@@ -1,6 +1,8 @@
 body {
   background-color: #333333;
   font-family: monospace;
+  display: flex;
+  justify-content: center;
 }
 
 select, button { height: 25px; }
@@ -10,6 +12,8 @@ a, a:visited { color: #008AD8; }
 form {
   position: fixed;
   height: 25px;
+  width: 100%;
+  text-align: center;
 }
 
 .gridV, .gridH line { color: #555555; }
@@ -24,11 +28,6 @@ form {
   border: 1px white solid;
   width: 75px;
   text-align: center;
-}
-
-.form-right {
-  float: right;
-  right: 7.5px;
 }
 
 #uploadError { color: red; }
@@ -100,7 +99,7 @@ form {
 }
 
 .analysis {
-  padding-right: 50px;
+  padding-right: calc(10px + 2vw);
   padding-bottom: 10px;
 }
 
@@ -131,4 +130,14 @@ form {
 #dayFreqBarChart {
   width: 200px;
   float: left;
+}
+
+@media only screen and (max-width: 428px) {
+  .modal-content, .modal-content-graphs {
+    width: 85%;
+  }
+  .close {
+    font-size: calc(8px + 1.5vh);
+    height: calc(30px + 1vh);
+  }
 }
